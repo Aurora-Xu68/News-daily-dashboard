@@ -368,7 +368,8 @@ div[style*="padding: 2px 16px 18px"]{padding:2px 8px 16px !important}
 <div style="border-top: 1px solid #EDEDF0; padding-top: 16px; margin-top: 4px"><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; padding-bottom: 2px">指标定义</div></div>
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 18px 36px">
 <div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">声量</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">去重后提到监测对象的条数。</div></div>
-<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">竞品声量</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">每行用自己的名称搜，每次取前 30 条，同组当天都搜过才计入；只在组内比较。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">竞品声量</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">每行是一个品牌在本组品类里的全部产品：用下面这些产品名分别搜，每个词每次取前 30 条，合起来去重；同组当天都搜过才计入；只在组内比较。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">竞品各行的产品</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">{{ prodNote }}</div></div>
 <div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">负面占比</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">负面条数 ÷ 全部条数。</div></div>
 <div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">评论</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">每条帖子读前 20 条左右热评，不计入声量；负面评论 3 条以上且占三成，帖子按负面算。</div></div>
 <div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">每日负面条数</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">深红属于事件，浅红是零散负面。</div></div>
@@ -778,7 +779,7 @@ var CLO = N - V.nDays;
 var COMP = (D.comps || []).map(function (c) {
 var a = [0, 0, 0, 0, 0];
 (c.cr || []).forEach(function (x) { if (x[0] < CLO || (PL >= 0 && x[1] !== PL)) return; a[0]++; if (x[2] === 1) a[1]++; if (x[2] === -1) a[2]++; if (x[1] >= 1) { a[3] += x[3]; a[4]++; } });
-return { n: c.n, cat: c.cat, g: c.g || '', sub: c.sub || '', me: c.me, rev: c.rev, per: c.per, fin: c.fin, pos: a[1], neg: a[2], vol: a[0], ns: a[1] + a[2] ? ((a[1] - a[2]) / (a[1] + a[2])).toFixed(2).replace(/^(?!-)/, '+').replace('-', '−') : null, eng: a[4] ? fmt(a[3] / a[4]) : null, posts: a[4] || null };
+return { n: c.n, cat: c.cat, g: c.g || '', prod: c.prod || '', me: c.me, rev: c.rev, per: c.per, fin: c.fin, pos: a[1], neg: a[2], vol: a[0], ns: a[1] + a[2] ? ((a[1] - a[2]) / (a[1] + a[2])).toFixed(2).replace(/^(?!-)/, '+').replace('-', '−') : null, eng: a[4] ? fmt(a[3] / a[4]) : null, posts: a[4] || null };
 });
 var cs = st.comp == null ? -1 : st.comp, GMAX = {}; COMP.forEach(function (c) { GMAX[c.g] = Math.max(GMAX[c.g] || 1, c.vol || 0); });   // 条形按组内最大值缩放：只在组内比较
 R.platName = PNAME; R.rangeName = RG === 'all' ? '全部 ' + N + ' 天' : RANGES.filter(function (r) { return r[0] === RG; })[0][1]; var anyEng = COMP.some(function (c) { return c.eng != null; });
@@ -786,7 +787,7 @@ R.hasEng = true; R.engCls = ''; R.engHint = anyEng ? '条均互动下方是参�
 R.comps = COMP.map(function (c, i) {
 var on = cs === i, gh = i === 0 || COMP[i - 1].g !== c.g;
 var ok = (c.vol || 0) >= 10;   // 不到 10 条不画条形、不给净情感度：样本太少，比较没有意义
-return { ok: ok, low: !ok, lowTxt: c.vol ? '样本不足 · ' + c.vol + ' 条' : '暂无数据', gh: gh && !!c.g, g: c.g, gn: (D.gnote || {})[c.g] || '', i: c.me ? '' : String(i), n: c.n, cat: c.sub, w: c.me || on ? '600' : '500', bg: on ? '#F5F5F7' : 'transparent', x: on ? 'true' : 'false', cur: c.me ? 'default' : 'pointer',
+return { ok: ok, low: !ok, lowTxt: c.vol ? '样本不足 · ' + c.vol + ' 条' : '暂无数据', gh: gh && !!c.g, g: c.g, gn: (D.gnote || {})[c.g] || '', i: c.me ? '' : String(i), n: c.n, cat: '', w: c.me || on ? '600' : '500', bg: on ? '#F5F5F7' : 'transparent', x: on ? 'true' : 'false', cur: c.me ? 'default' : 'pointer',
 bw: ((c.vol || 0) / (GMAX[c.g] || 1) * 70) + '%', wn: (c.vol ? c.neg / c.vol * 100 : 0) + '%', wp: (c.vol ? c.pos / c.vol * 100 : 0) + '%', wu: (c.vol ? (c.vol - c.pos - c.neg) / c.vol * 100 : 0) + '%', nsc: c.ns == null ? SEC : c.ns.charAt(0) === '−' ? RED : INK, vol: fmt(c.vol || 0), eng: c.eng == null || !ok ? '—' : c.eng, posts: c.posts == null ? '' : c.posts + ' 条', ns: c.ns == null || !ok ? '—' : c.ns, rev: c.rev || '—', per: c.per || '' };
 });
 var grps = []; COMP.forEach(function (c) { if (c.g && grps.indexOf(c.g) < 0) grps.push(c.g); });
@@ -802,6 +803,7 @@ R.compSub = cc ? cc.g + (cc.fin ? ' · ' + cc.fin : '') : '按热度和新近程
 R.compObs = cc && !ci.length ? '所选范围内没有采集到该公司的动态。' : ''; R.compObsSrcs = []; R.hasObs = !!R.compObs;
 R.onCompClear = function () { setState({ comp: null }); };
 R.compFoot = D.compFoot || '';
+var pg = {}; (D.comps || []).forEach(function (c) { if (!c.g || !c.prod) return; (pg[c.g] = pg[c.g] || []).push(c.n + '：' + c.prod); }); R.prodNote = Object.keys(pg).filter(function (g) { return g !== '全品类'; }).map(function (g) { return g + '组　' + pg[g].join('；'); }).join('。') + (Object.keys(pg).length ? '。' : '');
 var SON2 = 'background: #FFFFFF; color: ' + INK + '; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.10)', SOFF2 = 'background: none; color: ' + SEC;
 R.ranges = RANGES.map(function (r) { var on = RG === r[0]; return { k: r[0], label: r[1], x: on ? 'true' : 'false', css: on ? SON2 : SOFF2 }; });
 R.platBtns = [{ k: '-1', label: '全部', x: PL < 0 ? 'true' : 'false', css: PL < 0 ? SON2 : SOFF2, dis: '', tip: '' }].concat(D.plats.map(function (n, i) { var have = D.platHave[i], on = PL === i;
@@ -872,7 +874,7 @@ if (r.ok) { btn.textContent = '完成'; btn.onclick = function () { o.remove(); 
 };
 }
 function openEdit() {
-var list = (D.comps || []).filter(function (c) { return !c.me; }).map(function (c) { return { name: c.n, category: c.cat === '未分类' ? '' : c.cat }; });
+var list = (D.comps || []).filter(function (c) { return !c.me; }).map(function (c) { return { name: c.id || c.n, category: c.cat === '未分类' ? '' : c.cat }; });
 var o = modal('<h2>编辑竞品组</h2><div style="color:' + SEC + ';font-size:13px">「' + esc(D.meta.brand) + '」当前的竞品。点 × 移除，或在下方添加；点保存后统一生效。</div>' +
 '<div data-list style="display:flex;flex-wrap:wrap;gap:8px"></div>' +
 '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end"><label>公司名称<input name="name" placeholder="例如：三只松鼠"></label><label>品类（可选）<input name="cat" placeholder="例如：休闲零食"></label><label>关键词（可选）<input name="kw" placeholder="逗号分隔"></label></div>' +
