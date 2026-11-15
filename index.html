@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日资讯</title>
+<meta name="author" content="Aurora Xu">
+<meta name="copyright" content="© 2026 Aurora Xu. All rights reserved.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration-color:#C7C7CC;text-underline-offset:3px}a:hover{color:#C8102E}
+.ev,.evband,.cb{position:absolute;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;text-align:left}
+.ev{top:10px;height:258px;width:20px;transform:translateX(-50%)}
+.ev::before{content:"";position:absolute;left:50%;top:8px;bottom:0;width:1px;margin-left:-0.5px;background:#C7C7CC}
+.ev::after{content:"";position:absolute;left:50%;top:0;width:8px;height:8px;margin-left:-5.5px;border-radius:50%;background:#FFFFFF;border:1.5px solid #1D1D1F}
+.ev:hover::before,.ev:focus::before{width:2px;margin-left:-1px;background:#1D1D1F}
+.evband{top:28px;height:240px}
+.ci{position:relative;height:294px}
+.ev.lft .tip{left:auto;right:22px}
+.ev.fut::before,.ev.fut:hover::before,.ev.fut:focus::before{background:none;width:0;margin-left:-0.5px;border-left:1px dashed #8E8E93}
+.ev.fut::after{border:1.5px dashed #8E8E93}
+*{scrollbar-width:thin;scrollbar-color:#D2D2D7 transparent}
+*::-webkit-scrollbar{height:6px;width:6px}
+*::-webkit-scrollbar-thumb{background:#D2D2D7;border-radius:3px}
+*::-webkit-scrollbar-track{background:transparent}
+.tk{position:absolute;top:274px;font-size:11px;color:#6E6E73;transform:translateX(-50%);white-space:nowrap}
+.cb{aspect-ratio:1;border-radius:50%;border:2px solid #FFFFFF;transform:translate(-50%,-50%);box-sizing:border-box}
+.cb .tip{top:calc(100% + 8px);left:50%;transform:translateX(-50%);width:250px}
+.cb.r .tip{left:auto;right:-10px;transform:none}
+.cb.up .tip{top:auto;bottom:calc(100% + 8px)}
+.cb:hover,.cb:focus{z-index:20;outline:none;box-shadow:0 0 0 2px #1D1D1F}
+.cb:hover .tip,.cb:focus .tip{display:block}
+.tip{display:none;position:absolute;z-index:5;background:#FFFFFF;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,0.08),0 16px 40px rgba(0,0,0,0.14);padding:14px 16px;color:#1D1D1F;font-size:13px;line-height:1.6;font-weight:400}
+.ev .tip{top:0;left:22px;width:310px}
+.evband .tip{top:0;right:calc(100% + 10px);width:250px}
+.ev:hover,.ev:focus,.evband:hover,.evband:focus,.bub:hover,.bub:focus{z-index:20;outline:none}
+.ev:hover .tip,.ev:focus .tip,.evband:hover .tip,.evband:focus .tip,.bub:hover .tip,.bub:focus .tip{display:block}
+.bub{position:relative;display:flex;align-items:center;justify-content:center;height:56px;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;border-radius:10px}
+.bub:hover,.bub:focus{background:#F5F5F7}
+.bub .tip{bottom:calc(100% - 4px);white-space:nowrap;padding:10px 14px}
+.bub.l .tip{left:0}.bub.c .tip{left:50%;transform:translateX(-50%)}.bub.r .tip{right:0}
+.pill{display:inline-block;font-size:11px;font-weight:500;padding:1px 8px;border-radius:6px;white-space:nowrap}
+
+.lnk{background:none;border:none;padding:0;margin:0;font-family:inherit;font-size:13px;color:#1D1D1F;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:32px;text-decoration:underline;text-decoration-color:#C7C7CC;text-underline-offset:4px}
+.lnk:hover{color:#C8102E}
+.rowbtn{transition:background .12s}
+.rowbtn:hover{background:#FAFAFB !important}
+.nd .tip{bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);white-space:nowrap;padding:8px 12px;font-size:12px}
+.nd:hover,.nd:focus{z-index:20;outline:none}
+.nd:hover .tip,.nd:focus .tip{display:block}
+.dbar:hover>span:first-child{background:#F5F5F7 !important}
+.pscroll::-webkit-scrollbar{width:6px}.pscroll::-webkit-scrollbar-thumb{background:#C7C7CC;border-radius:3px}.pscroll{scrollbar-width:thin;scrollbar-color:#C7C7CC transparent}
+.crow{display:grid;grid-template-columns:14px 118px minmax(150px,1fr) 96px 104px minmax(0,2.3fr);column-gap:16px;align-items:center}
+.wrow{display:grid;grid-template-columns:14px minmax(0,1fr) 170px 150px 96px;column-gap:16px;align-items:center}
+.crow [data-l]::before,.wrow [data-l]::before{display:none}
+.gn{transition:left .4s ease,top .4s ease,width .4s ease,opacity .3s ease}
+@keyframes gfade{from{opacity:0}to{opacity:1}}
+.ge{animation:gfade .5s ease}
+@media (max-width:860px){
+.crow{grid-template-columns:14px minmax(0,1fr) auto auto;row-gap:8px;column-gap:12px}
+.crow .c-vol,.crow .c-dyn{grid-column:2/-1}
+.wrow{grid-template-columns:14px minmax(0,1fr) minmax(0,1fr);row-gap:6px;column-gap:12px}
+.wrow .w-title,.wrow .w-first{grid-column:2/-1}
+.wrow .w-tr{grid-column:2}
+.chead,.whead{display:none !important}
+.crow [data-l]::before,.wrow [data-l]::before{display:inline;content:attr(data-l);color:#6E6E73;font-size:11px;font-weight:400;margin-right:6px}
+}
+
+.wrow{display:grid;grid-template-columns:minmax(0,1fr) 170px 150px 96px 14px;column-gap:16px;align-items:center}
+.frow{display:grid;grid-template-columns:104px minmax(0,1fr) 78px 60px 84px;column-gap:14px;align-items:center}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 44px 80px 40px 76px;column-gap:14px;align-items:center}
+.scr{overflow-y:auto;scrollbar-width:auto;scrollbar-color:auto}
+@supports not selector(::-webkit-scrollbar){.scr{scrollbar-width:thin;scrollbar-color:#C7C7CC transparent}}
+.scr::-webkit-scrollbar{width:6px}
+.scr::-webkit-scrollbar-track{background:transparent}
+.scr::-webkit-scrollbar-thumb{background:#D2D2D7;border-radius:3px}
+.scr:hover::-webkit-scrollbar-thumb{background:#AEAEB2}
+.chip{transition:opacity .25s ease}
+.chip:hover,.chip:focus{z-index:20;outline:none}
+.chip .tip{bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);white-space:nowrap;padding:8px 12px;font-size:12px;font-weight:400}
+.chip:hover .tip,.chip:focus .tip{display:block}
+.gring{position:absolute;border:1px solid #F0F0F3;border-radius:50%;box-sizing:border-box;pointer-events:none}
+.obtn{min-height:32px;padding:0 12px;border:none;border-radius:16px;background:#FFFFFF;box-shadow:inset 0 0 0 1px #C7C7CC;color:#1D1D1F;font-family:inherit;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.obtn:hover{box-shadow:inset 0 0 0 1px #1D1D1F}
+@media (max-width:860px){
+.prow{grid-template-columns:auto auto auto minmax(0,1fr);column-gap:8px;row-gap:5px}
+.prow .p-title{grid-column:1/-1}
+.phead{display:none !important}
+.wrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 14px;row-gap:6px;column-gap:12px}
+.wrow .w-title{grid-column:1/3}
+.wrow .w-first{grid-column:1/-1}
+.wrow [data-l]{grid-column:1/3;white-space:normal !important}
+.wdl{flex-direction:column;gap:2px !important}
+.wdl-k{width:auto !important;font-size:12px}
+.wind{padding-left:0 !important}
+.wind2{margin-left:0 !important}
+.parr{display:none}
+.csrc{margin-left:0 !important}
+.mhead{padding:20px 16px !important}
+.mtog{order:2}
+.msub{order:3;flex-basis:100%}
+section[style*="padding: 26px 28px"]{padding:22px 16px !important}
+aside[aria-label^="研判"]{padding:18px 16px !important}
+.wrow.rowbtn{padding:12px 8px !important}
+div[aria-hidden="true"][style*="margin: 0 16px"]{margin:0 8px !important}
+div[style*="padding: 2px 16px 18px"]{padding:2px 8px 16px !important}
+.seg button{padding:9px 12px !important}
+.gscr{overflow-x:auto;margin:0 -12px;padding:0 12px}
+.gbox{min-width:600px;align-self:flex-start !important}
+.ghint{display:block !important;position:sticky;left:0}
+.pnode{grid-template-columns:minmax(0,1fr) !important}
+.wrow .w-chev{grid-column:3;grid-row:1}
+.frow{grid-template-columns:100px minmax(0,1fr) 76px;column-gap:10px}
+.frow .f-ns,.frow .f-en{display:none}
+}
+
+.mbar{flex:1 1 0;min-width:0;display:flex;align-items:flex-end;justify-content:center;height:100%}
+.noeng .f-en{display:none}
+@media (min-width: 721px){.noeng .frow{grid-template-columns:104px minmax(0,1fr) 60px 84px}}
+.seg{display:inline-flex;flex-wrap:wrap;padding:3px;background:#E8E8ED;border-radius:9px;gap:2px}
+.seg button{border:none;font-family:inherit;font-size:13px;line-height:1.4;padding:5px 12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.seg button[disabled]{cursor:not-allowed;opacity:.45}
+.menu{position:absolute;left:-8px;top:calc(100% + 8px);z-index:30;min-width:240px;background:#FFFFFF;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.14),0 0 0 1px rgba(0,0,0,.06);padding:6px;display:flex;flex-direction:column}
+.menu button{display:flex;justify-content:space-between;gap:16px;align-items:baseline;border:none;background:none;font-family:inherit;font-size:14px;color:#1D1D1F;text-align:left;padding:9px 12px;border-radius:9px;cursor:pointer}
+.menu button:hover{background:#F5F5F7}
+.menu button[disabled]{cursor:default;color:#6E6E73}
+.ovl{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.32);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 24px;overflow:auto}
+.dlg{width:100%;max-width:520px;box-sizing:border-box;background:#FFFFFF;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.25);padding:26px 28px;display:flex;flex-direction:column;gap:16px;font-size:14px;line-height:1.6;color:#1D1D1F}
+.dlg h2{margin:0;font-size:19px;font-weight:600;letter-spacing:-0.01em}
+.dlg label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#6E6E73}
+.dlg input{font-family:inherit;font-size:14px;color:#1D1D1F;padding:9px 12px;border:none;border-radius:10px;background:#F5F5F7;box-shadow:inset 0 0 0 1px #E1E1E6;outline:none;min-width:0}
+.dlg input:focus{box-shadow:inset 0 0 0 1.5px #1D1D1F}
+.dlg .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;align-items:center}
+.pbtn{min-height:36px;padding:0 18px;border:none;border-radius:18px;background:#1D1D1F;color:#FFFFFF;font-family:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.pbtn[disabled]{opacity:.5;cursor:default}
+.chipx{display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 12px;border-radius:16px;background:#F5F5F7;font-size:13px}
+.chipx button{width:20px;height:20px;border:none;border-radius:50%;background:#E1E1E6;color:#1D1D1F;font-size:12px;line-height:1;cursor:pointer;padding:0}
+
+</style>
+</head>
+<body>
+<div style="font-family: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif; color: #1D1D1F; background: #F5F5F7; min-height: 100vh; line-height: 1.6">
+<main id="root" style="max-width: 1240px; margin: 0 auto; padding: 32px clamp(16px, 4vw, 48px) 40px; display: flex; flex-direction: column; gap: 20px"></main>
+</div>
+<script type="text/plain" id="tmpl">
+
+<header style="display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px">
+<div data-menu="1" style="position: relative">
+<button type="button" onClick="{{ onSwitch }}" aria-haspopup="true" aria-expanded="{{ swX }}" aria-label="切换监测对象，当前为 {{ meta.brand }}" style="display: inline-flex; align-items: center; gap: 8px; border: none; background: none; padding: 0; margin: 0; font-family: inherit; color: #1D1D1F; cursor: pointer"><span style="font-size: 28px; font-weight: 600; letter-spacing: -0.015em">{{ meta.brand }}</span><span aria-hidden="true" style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #E8E8ED; transform: {{ swRot }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="#8E8E93" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button>
+<sc-if value="{{ swOpen }}"><div class="menu" onClick="{{ onPickTarget }}"><span style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; padding: 6px 12px 4px">监测对象</span><sc-for list="{{ targets }}" as="t"><button type="button" data-target="{{ t.id }}" {{ t.dis }} style="font-weight: {{ t.w }}"><span>{{ t.name }}</span><span style="font-size: 12px; color: #6E6E73; font-weight: 400">{{ t.note }}</span></button></sc-for><span aria-hidden="true" style="height: 1px; background: #EDEDF0; margin: 6px 12px"></span><button type="button" data-new="1"><span>＋ 新建监测</span></button></div></sc-if>
+</div>
+<span style="font-size: 14px; color: #6E6E73">每日资讯</span>
+</div>
+<div style="font-size: 12px; color: #6E6E73">{{ meta.sub }}</div>
+</div>
+<div style="font-size: 12px; color: #6E6E73">数据更新于 {{ meta.updated }}</div>
+</header>
+<div style="display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center">
+<div style="display: flex; align-items: center; gap: 10px"><span style="flex: none; white-space: nowrap; font-size: 12px; color: #6E6E73">时间范围</span><div class="seg" role="group" aria-label="时间范围" onClick="{{ onRange }}"><sc-for list="{{ ranges }}" as="r"><button type="button" data-range="{{ r.k }}" aria-pressed="{{ r.x }}" style="{{ r.css }}">{{ r.label }}</button></sc-for></div></div>
+<div style="display: flex; align-items: center; gap: 10px"><span style="flex: none; white-space: nowrap; font-size: 12px; color: #6E6E73">平台</span><div class="seg" role="group" aria-label="平台" onClick="{{ onPlat }}"><sc-for list="{{ platBtns }}" as="b"><button type="button" data-plat="{{ b.k }}" aria-pressed="{{ b.x }}" {{ b.dis }} title="{{ b.tip }}" style="{{ b.css }}">{{ b.label }}</button></sc-for></div></div>
+<span style="flex: 1 1 260px; font-size: 12px; color: #6E6E73">{{ filterNote }}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; padding: 18px 4px 0"><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #6E6E73">01</span><h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">舆情预警</h2><span style="font-size: 13px; color: #6E6E73">负面事件的监测与跟踪</span></div>
+<section style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04); box-sizing: border-box; min-width: 0; padding: 26px 28px; display: flex; flex-direction: column; gap: 22px"><sc-if value="{{ negSmall }}"><div style="display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: center; justify-content: space-between">
+<div style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<h3 id="h-alert" style="margin: 0; font-size: 13px; font-weight: 500; color: #6E6E73">近 7 天有新增负面的事件</h3>
+<div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap"><span style="font-size: 64px; font-weight: 600; line-height: 1; letter-spacing: -0.03em; color: {{ kTodayColor }}">{{ shareBig }}</span><span style="font-size: 15px; color: #6E6E73">{{ shareCap }}</span></div>
+<div style="font-size: 15px; line-height: 1.7; margin-top: 6px">{{{ heroNote }}}</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px 28px; margin-top: 14px; max-width: 640px"><sc-for list="{{ tiles }}" as="t"><div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 12px; color: #6E6E73">{{ t.label }}</span><span style="font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ t.value }}</span><span style="font-size: 12px; color: #6E6E73; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ t.sub }}</span></div></sc-for></div>
+</div>
+<div role="button" tabindex="0" onClick="{{ onNegOpen }}" aria-label="放大查看每日负面条数" class="rowbtn" style="flex: 1 1 320px; min-width: 0; max-width: 460px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; margin: -12px -14px; border: none; border-radius: 14px; background: none; font-family: inherit; color: #1D1D1F; text-align: left; cursor: zoom-in">
+<span style="display: flex; gap: 10px; align-items: baseline; justify-content: space-between"><span style="font-size: 13px; font-weight: 500">每日负面条数</span><span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: #6E6E73"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M7 1.5h3.5V5M5 10.5H1.5V7M10.5 1.5L6.8 5.2M1.5 10.5l3.7-3.7" fill="none" stroke="#6E6E73" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>放大看每天的数字</span></span>
+<span style="display: flex; min-width: 0; padding-right: 12px">
+<span aria-hidden="true" style="position: relative; flex: none; width: 26px; height: 96px"><span style="position: absolute; right: 6px; bottom: -6px; font-size: 11px; color: #6E6E73">0</span><span style="position: absolute; right: 6px; bottom: {{ miniThrLab }}; font-size: 11px; color: #6E6E73">{{ thr }}</span></span>
+<span style="position: relative; flex: 1 1 0; min-width: 0; height: 96px; border-bottom: 1px solid #D2D2D7">
+<span style="position: absolute; inset: 0; display: flex; gap: 2px"><sc-for list="{{ days }}" as="d"><span class="mbar" style="position: relative"><span style="position: absolute; bottom: 0; width: clamp(2px, 60%, 7px); height: {{ d.mh }}; background: {{ d.mc }}; border-radius: {{ d.r }}"></span><span style="position: absolute; bottom: 0; width: clamp(2px, 60%, 7px); height: {{ d.meh }}; background: #DB444B; border-radius: 2px 2px 0 0"></span></span></sc-for></span>
+</span>
+</span>
+<span style="display: flex; justify-content: space-between; padding: 0 12px 0 26px; font-size: 11px; color: #6E6E73"><span>{{ day0 }}</span><span style="color: #1D1D1F; font-weight: 600">今日</span></span>
+</div>
+</div></sc-if><sc-if value="{{ negBig }}"><div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><h3 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">每日负面条数</h3><span style="font-size: 12px; color: #6E6E73">{{ ndLabel }}{{ totHint }} · 点击某一天看当天的负面内容</span><span style="display: inline-flex; gap: 12px; align-items: center; font-size: 12px; color: #6E6E73"><span style="display: inline-flex; gap: 5px; align-items: center"><i style="width: 8px; height: 8px; border-radius: 2px; background: #DB444B"></i>属于跟踪中的事件</span><span style="display: inline-flex; gap: 5px; align-items: center"><i style="width: 8px; height: 8px; border-radius: 2px; background: #F1B4BD"></i>零散负面</span></span></div>
+<button type="button" class="lnk" onClick="{{ onNegClose }}">收起</button>
+</div>
+<div style="display: flex; min-width: 0">
+<div aria-hidden="true" style="position: relative; flex: none; width: 30px; height: 244px"><sc-for list="{{ negTicks }}" as="y"><span style="position: absolute; right: 8px; bottom: {{ y.b }}; font-size: 11px; color: #6E6E73; font-variant-numeric: tabular-nums">{{ y.v }}</span></sc-for></div>
+<div style="position: relative; flex: 1 1 0; min-width: 0; height: 244px">
+<span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 23px; height: 1px; background: #D2D2D7"></span>
+<div onClick="{{ onDay }}" style="position: absolute; inset: 0; display: flex; gap: 2px"><sc-for list="{{ days }}" as="d"><button type="button" class="dbar" data-day="{{ d.i }}" aria-label="{{ d.aria }}" style="flex: 1 1 0; min-width: 0; height: 244px; position: relative; padding: 0; margin: 0; border: none; background: transparent; font-family: inherit; cursor: pointer"><span style="position: absolute; left: 0; right: 0; top: 0; bottom: 24px; border-radius: 6px 6px 0 0; background: {{ d.bg }}"></span><span style="position: absolute; left: 50%; bottom: {{ d.vb }}; transform: translateX(-50%); font-size: 12px; font-weight: 600; color: #1D1D1F">{{ d.val }}</span><span style="position: absolute; left: 50%; bottom: 24px; width: min(56%, 16px); height: {{ d.eh }}; transform: translateX(-50%); background: #DB444B; border-radius: {{ d.er }}"></span><span style="position: absolute; left: 50%; bottom: {{ d.sb }}; width: min(56%, 16px); height: {{ d.sh }}; transform: translateX(-50%); background: #F1B4BD; border-radius: 3px 3px 0 0"></span><span style="position: absolute; left: 50%; bottom: 3px; transform: translateX(-50%); font-size: 11px; white-space: nowrap; color: {{ d.labColor }}; font-weight: {{ d.labWeight }}">{{ d.lab }}</span></button></sc-for></div>
+</div>
+</div>
+<sc-if value="{{ showTot }}"><div aria-hidden="true" style="display: flex; min-width: 0; margin-top: -8px"><span style="flex: none; width: 30px"></span><div style="flex: 1 1 0; min-width: 0; display: flex; gap: 2px"><sc-for list="{{ days }}" as="d"><span style="flex: 1 1 0; min-width: 0; text-align: center; font-size: 10.5px; color: #AEAEB2; font-variant-numeric: tabular-nums">{{ d.tot }}</span></sc-for></div></div></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 28px; align-items: baseline; padding: 14px 16px; background: #F5F5F7; border-radius: 12px">
+<span style="font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums">{{ dayDate }}</span>
+<span style="display: inline-flex; align-items: baseline; gap: 6px"><span style="font-size: 12px; color: #6E6E73">负面</span><span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums">{{ dayNeg }} 条</span></span><span style="display: inline-flex; align-items: baseline; gap: 6px"><span style="font-size: 12px; color: #6E6E73">全部内容</span><span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums">{{ dayTot }} 条</span></span><span style="display: inline-flex; align-items: baseline; gap: 6px"><span style="font-size: 12px; color: #6E6E73">负面占比</span><span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums">{{ dayShare }}</span></span><span style="display: inline-flex; align-items: baseline; gap: 6px"><span style="font-size: 12px; color: #6E6E73">负面互动量</span><span style="font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums">{{ dayEng }}</span></span>
+<sc-if value="{{ hasDayItems }}"><div style="flex: 1 1 100%; display: flex; flex-direction: column; gap: 6px; padding-top: 8px; margin-top: 4px; border-top: 1px solid #E5E5EA"><sc-for list="{{ dayItems }}" as="y"><div style="display: flex; gap: 10px; align-items: baseline; font-size: 13.5px; min-width: 0"><i style="flex: none; width: 8px; height: 8px; border-radius: 2px; background: {{ y.dot }}"></i><a href="{{ y.u }}" target="_blank" rel="noopener" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ y.title }}</a><span style="flex: none; font-size: 12px; color: #6E6E73; white-space: nowrap">{{ y.o }}</span></div></sc-for></div></sc-if>
+</div>
+</div></sc-if><div style="border-top: 1px solid #EDEDF0; padding-top: 20px"><div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 0 0 14px"><h3 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">负面事件跟踪</h3><span style="font-size: 12px; color: #6E6E73">{{ evLabel }}有负面内容的事件 · 点击任一行展开</span></div>
+<div class="wrow whead" style="padding: 0 16px 8px; font-size: 11px; color: #6E6E73"><span>事件</span><span>首发</span><span>扩散</span><span>走势</span><span></span></div>
+<div onClick="{{ onW }}" style="display: flex; flex-direction: column; margin: 0 -6px"><sc-for list="{{ watch }}" as="w"><div style="background: {{ w.bg }}; border-radius: 14px">
+<button type="button" class="wrow rowbtn" data-w="{{ w.i }}" aria-expanded="{{ w.x }}" style="width: 100%; box-sizing: border-box; padding: 14px 16px; margin: 0; border: none; border-radius: 14px; background: none; font-family: inherit; color: #1D1D1F; text-align: left; cursor: pointer">
+<span class="w-title" style="min-width: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline"><span class="pill" style="font-weight: 600; padding: 2px 8px; {{ w.lvCss }}">{{ w.level }}</span><span style="font-size: 15px; font-weight: 500">{{ w.title }}</span><sc-if value="{{ w.saved }}"><span class="pill" style="font-size: 11.5px; padding: 1px 7px; background: none; color: #6E6E73; box-shadow: inset 0 0 0 1px #C7C7CC">被大量收藏</span></sc-if></span>
+<span class="w-first" style="font-size: 12.5px; color: #6E6E73; white-space: nowrap">{{ w.first }}</span>
+<span class="w-tr" data-l="扩散" style="font-size: 13.5px; white-space: nowrap">{{ w.trend }}</span>
+<span data-l="走势" style="font-size: 14px; white-space: nowrap; color: {{ w.fcColor }}">{{ w.forecast }}</span>
+<span class="w-chev" aria-hidden="true" style="display: inline-flex; justify-content: center; transform: {{ w.rot }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="#8E8E93" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+</button>
+<sc-if value="{{ w.open }}"><div style="padding: 2px 16px 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.7"><div class="wdl" style="display: flex; gap: 12px; max-width: 860px"><span class="wdl-k" style="flex: none; width: 28px; color: #6E6E73">说明</span><span style="min-width: 0">{{{ w.desc }}}</span></div><sc-if value="{{ w.hasCm }}"><div class="wdl" style="display: flex; gap: 12px; max-width: 860px"><span class="wdl-k" style="flex: none; width: 28px; color: #6E6E73">评论</span><span style="min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="color: #6E6E73">{{ w.cmHead }}</span><sc-for list="{{ w.cm }}" as="q"><span style="display: flex; gap: 10px; align-items: baseline"><span style="min-width: 0">{{ q.x }}</span><span style="flex: none; font-size: 12px; color: #6E6E73; white-space: nowrap">{{ q.l }}</span></span></sc-for></span></div></sc-if><sc-if value="{{ w.hasHts }}"><div class="wdl" style="display: flex; gap: 12px; max-width: 860px"><span class="wdl-k" style="flex: none; width: 28px; color: #6E6E73">话题</span><span style="min-width: 0; display: flex; flex-direction: column; gap: 2px"><sc-for list="{{ w.hts }}" as="h"><span style="display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline"><span style="font-weight: 500">{{ h.t }}</span><span style="font-size: 12px; color: #6E6E73">{{ h.m }}</span></span></sc-for></span></div></sc-if><div class="wdl" style="display: flex; gap: 12px; max-width: 860px"><span class="wdl-k" style="flex: none; width: 28px; color: #6E6E73">建议</span><span style="min-width: 0">{{{ w.action }}}</span></div><sc-if value="{{ w.hasPath }}"><div class="wind" style="padding-left: 40px"><button type="button" class="lnk" data-path="{{ w.i }}" aria-expanded="{{ w.px }}" style="font-size: 12px; min-height: 24px">{{ w.pathLabel }}</button></div></sc-if><sc-if value="{{ w.pathOpen }}"><div class="wind2" style="margin: 2px 0 0 40px; display: flex; flex-direction: column">{{{ w.pathHtml }}}<div style="font-size: 12px; color: #6E6E73; padding: 0 0 8px">{{ w.listHead }}</div><div class="pscroll" style="display: flex; flex-direction: column; {{ w.listCss }}"><sc-for list="{{ w.path }}" as="n"><div class="pnode" style="display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 2px 14px; padding: 9px 0; border-top: 1px solid #E8E8ED"><span style="font-size: 12px; color: #6E6E73; font-variant-numeric: tabular-nums; white-space: nowrap">{{ n.tm }}</span><span style="min-width: 0"><span class="pill" style="margin-right: 8px; {{ n.css }}">{{ n.role }}</span><a href="{{ n.u }}" target="_blank" rel="noopener" style="font-size: 13.5px">{{ n.title }}</a><span style="display: block; font-size: 12px; color: #6E6E73">{{ n.meta }}</span></span></div></sc-for></div><sc-if value="{{ w.hasMore }}"><div style="padding-top: 10px"><button type="button" class="lnk" data-pall="{{ w.i }}" style="font-size: 12px; min-height: 24px">{{ w.moreLabel }}</button></div></sc-if></div></sc-if></div></sc-if>
+</div><div aria-hidden="true" style="height: 1px; margin: 0 16px; background: {{ w.bd }}"></div></sc-for></div>
+<sc-if value="{{ noWatch }}"><div style="font-size: 13px; color: #6E6E73; padding: 8px 10px">所选时间范围内没有负面事件。</div></sc-if>
+</div></div><aside aria-label="研判 01" style="background: #F5F5F7; border-radius: 14px; padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 16px 36px">
+<div style="flex: 1 1 230px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 11px; letter-spacing: 0.14em; font-weight: 600; color: #6E6E73">研判 01</div>
+<h3 style="margin: 0; font-size: 18px; font-weight: 600; line-height: 1.5; letter-spacing: -0.01em">{{ j1.title }}</h3>
+<div style="font-size: 12px; color: #6E6E73">基于上方数据的判断与建议。</div>
+</div>
+<div style="flex: 3.2 1 520px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 16px 28px; font-size: 13.5px; line-height: 1.7"><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">依据</div>{{{ j1.basis }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">{{ j1.actionLabel }}</div>{{{ j1.action }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">跟踪指标</div>{{{ j1.metric }}}</div></div>
+</aside></section>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; padding: 18px 4px 0"><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #6E6E73">02</span><h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">品牌舆情</h2><span style="font-size: 13px; color: #6E6E73">声量趋势、议题分布与代表性内容</span></div>
+<section style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04); box-sizing: border-box; min-width: 0; padding: 26px 28px; display: flex; flex-direction: column; gap: 22px"><div style="min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; justify-content: space-between">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><h3 id="h-trend" style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">声量趋势</h3><span style="color: #6E6E73; font-size: 12px">日提及量（条）</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: #6E6E73"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 2px; background: #1D1D1F"></span>总声量</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 14px; height: 2px; background: #C8102E"></span>负面声量</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #1D1D1F; box-sizing: border-box"></span>事件</span></div>
+</div>
+<div style="display: flex; min-width: 0">
+<div aria-hidden="true" style="position: relative; flex: none; width: 46px; height: 294px"><sc-for list="{{ yl }}" as="y"><span style="position: absolute; right: 8px; top: {{ y.ltop }}; font-size: 11px; color: #6E6E73; font-variant-numeric: tabular-nums">{{ y.label }}</span></sc-for></div>
+<div role="group" aria-label="每日声量趋势图。纵轴从 0 开始，随所选时间范围自动调整上限。" style="flex: 1 1 0; min-width: 0; height: 294px; overflow: hidden; position: relative">
+<sc-for list="{{ yg }}" as="g"><span aria-hidden="true" style="position: absolute; left: 0; right: 0; top: {{ g.top }}; height: 1px; background: #F0F0F2"></span></sc-for>
+<div class="ci" style="width: {{ ciW }}; left: {{ ciLeft }}">
+<div style="position: absolute; left: 0; right: 0; top: 28px; height: 240px; border-bottom: 1px solid #D2D2D7; overflow: hidden"><svg viewBox="0 0 {{ vbW }} {{ vbH }}" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; bottom: 0; width: 100%; height: {{ svgH }}; display: block"><polygon points="{{ ptsArea }}" fill="#1D1D1F" fill-opacity="0.05"></polygon><polyline points="{{ ptsTot }}" fill="none" stroke="#1D1D1F" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline><polyline points="{{ ptsNeg }}" fill="none" stroke="#C8102E" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline></svg></div>
+<span aria-hidden="true" style="position: absolute; left: {{ peakLeft }}; top: {{ peakTop }}; width: 8px; height: 8px; margin: -6px 0 0 -6px; border-radius: 50%; background: #1D1D1F; border: 2px solid #FFFFFF"></span>
+<span style="position: absolute; left: {{ peakLeft }}; top: {{ peakLabelTop }}; margin-left: 12px; transform: {{ peakTf }}; font-size: 13px; font-weight: 600; white-space: nowrap">{{ peakVal }}</span>
+<sc-for list="{{ ticks }}" as="k"><span class="tk" style="left: {{ k.left }}; transform: {{ k.tf }}; color: {{ k.c }}; font-weight: {{ k.w }}">{{ k.label }}</span></sc-for>
+<sc-for list="{{ evMarks }}" as="m"><button type="button" class="{{ m.cls }}" aria-label="{{ m.aria }}" style="left: {{ m.left }}"><span class="tip"><span style="display: block; font-weight: 600">{{ m.head }}</span><sc-for list="{{ m.items }}" as="q"><span style="display: block; margin-top: 10px"><span style="display: flex; gap: 8px; align-items: center; color: #6E6E73; font-size: 12px"><span class="pill" style="font-weight: 600; {{ q.lvCss }}">{{ q.level }}</span><span>{{ q.first }}</span></span><span style="display: block; font-weight: 600; margin-top: 2px">{{ q.title }}</span></span></sc-for></span></button></sc-for>
+<sc-for list="{{ futMarks }}" as="f"><button type="button" class="ev fut lft" aria-label="{{ f.label }}" style="left: {{ f.left }}"><span class="tip"><span style="display: block; font-weight: 600">{{ f.label }}</span><span style="display: block; margin-top: 6px; color: #6E6E73">{{ f.tip }}</span></span></button><span style="position: absolute; left: {{ f.left }}; top: 34px; transform: translateX(-100%); margin-left: -8px; font-size: 11px; color: #6E6E73; white-space: nowrap">{{ f.short }}</span></sc-for>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-left: 46px">
+<div style="position: relative; height: 28px; border-radius: 9px; background: #E8E8ED; touch-action: none; user-select: none">
+<div data-nav="1" style="position: absolute; left: 3px; right: 3px; top: 3px; bottom: 3px">
+<div role="slider" tabindex="0" aria-label="显示范围：拖动滑块平移，拖动两端缩放" aria-valuetext="{{ rangeLabel }}" onPointerDown="{{ onPan }}" style="position: absolute; top: 0; bottom: 0; left: {{ winL }}; width: {{ winW }}; box-sizing: border-box; border-radius: 6px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.12); cursor: grab; touch-action: none">
+<span onPointerDown="{{ onLeft }}" style="position: absolute; left: 0; top: 0; bottom: 0; width: 18px; display: flex; align-items: center; justify-content: center; cursor: ew-resize; touch-action: none"><span aria-hidden="true" style="width: 3px; height: 10px; border-radius: 2px; background: #1D1D1F"></span></span>
+<span onPointerDown="{{ onRight }}" style="position: absolute; right: 0; top: 0; bottom: 0; width: 18px; display: flex; align-items: center; justify-content: center; cursor: ew-resize; touch-action: none"><span aria-hidden="true" style="width: 3px; height: 10px; border-radius: 2px; background: #1D1D1F"></span></span>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between; font-size: 12px; color: #6E6E73">
+<span>拖动滑块平移，拖动两端缩放；纵轴随范围自适应</span>
+<span style="color: #1D1D1F; font-variant-numeric: tabular-nums">{{ rangeLabel }}</span>
+</div>
+</div>
+<div style="font-size: 14px; line-height: 1.7; color: #6E6E73"><span style="color: #1D1D1F; font-weight: 500">解读</span>　{{{ trendNote }}}</div>
+</div><div style="display: flex; flex-wrap: wrap; gap: 28px 48px; align-items: flex-start; border-top: 1px solid #EDEDF0; padding-top: 22px"><div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline"><h3 id="h-tags" style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">议题分布</h3></div>
+<div role="group" aria-label="议题视图" style="display: flex; gap: 2px; background: #E8E8ED; border-radius: 9px; padding: 2px"><button type="button" onClick="{{ onRank }}" aria-pressed="{{ rankPressed }}" style="min-height: 30px; padding: 0 12px; border: none; border-radius: 7px; font-family: inherit; font-size: 12px; cursor: pointer; {{ segRank }}">议题排行</button><button type="button" onClick="{{ onGraph }}" aria-pressed="{{ graphPressed }}" style="min-height: 30px; padding: 0 12px; border: none; border-radius: 7px; font-family: inherit; font-size: 12px; cursor: pointer; {{ segGraph }}">议题关联</button></div>
+</div>
+<sc-if value="{{ rankView }}" hint-placeholder-val="{{ true }}"><div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 12px; color: #6E6E73">{{ rankCaption }}</div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: #6E6E73"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 3px; background: #DB444B"></span>负面</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 3px; background: #D2D2D7"></span>中性</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 3px; background: #48484A"></span>正面</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="padding-right: 14px"><div style="display: grid; grid-template-columns: 78px minmax(0, 1fr) 46px 34px; column-gap: 10px; align-items: center; padding: 0 8px 4px; font-size: 11px; color: #6E6E73"><span>议题</span><span>声量（条）</span><span></span><span style="text-align: right; white-space: nowrap">近 7 天</span></div></div>
+<div class="scr" onClick="{{ onTag }}" tabindex="0" role="group" aria-label="议题列表，可滚动" style="max-height: {{ rankMaxH }}; padding-right: 8px; display: flex; flex-direction: column; gap: 2px">
+<sc-for list="{{ tagList }}" as="t" hint-placeholder-count="6"><button type="button" class="rowbtn" data-tag="{{ t.i }}" aria-pressed="{{ t.on }}" style="display: grid; grid-template-columns: 78px minmax(0, 1fr) 46px 34px; column-gap: 10px; align-items: center; width: 100%; min-height: 40px; padding: 0 8px; margin: 0; box-sizing: border-box; border: none; border-radius: 10px; background: {{ t.bg }}; font-family: inherit; font-size: 13.5px; color: #1D1D1F; cursor: pointer; text-align: left"><span style="font-weight: {{ t.weight }}; white-space: nowrap">{{ t.name }}</span><span aria-hidden="true" style="display: block; height: 36px; background-image: linear-gradient(to right, #E8E8ED 1px, transparent 1px); background-size: 25% 100%; border-right: 1px solid #E8E8ED"><span style="display: flex; gap: 2px; width: {{ t.wAll }}; margin-top: 11px"><span style="display: block; height: 14px; width: {{ t.wNeg }}; background: #DB444B; border-radius: 0 2px 2px 0; flex: none"></span><span style="display: block; height: 14px; width: {{ t.wNeu }}; background: #D2D2D7; border-radius: 2px; flex: none"></span><span style="display: block; height: 14px; flex: 1 1 0; min-width: 0; background: #48484A; border-radius: 0 4px 4px 0"></span></span></span><span style="text-align: right; font-weight: 600; font-variant-numeric: tabular-nums">{{ t.total }}</span><span style="text-align: right; font-size: 12px; color: {{ t.trendColor }}; font-weight: {{ t.trendWeight }}">{{ t.trend }}</span></button></sc-for>
+</div>
+<div style="padding-right: 14px"><div style="display: grid; grid-template-columns: 78px minmax(0, 1fr) 46px 34px; column-gap: 10px; align-items: center; padding: 0 8px; font-size: 11px; color: #6E6E73"><span></span><div style="position: relative; height: 18px"><span style="position: absolute; left: 0%; top: 4px; transform: translateX(0); font-variant-numeric: tabular-nums">0</span><span style="position: absolute; left: 50%; top: 4px; transform: translateX(-50%); font-variant-numeric: tabular-nums">{{ axMid }}</span><span style="position: absolute; left: 100%; top: 4px; transform: translateX(-100%); font-variant-numeric: tabular-nums">{{ axMax }}</span></div><span></span><span></span></div></div>
+</div>
+<button type="button" class="lnk" onClick="{{ onMore }}" aria-expanded="{{ moreX }}" style="align-self: flex-start; font-size: 12.5px">{{ moreLabel }}<span aria-hidden="true" style="display: inline-flex; transform: {{ moreRot }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke="#6E6E73" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button>
+</div></sc-if>
+<sc-if value="{{ graphView }}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 8px">
+<div onClick="{{ onCrumb }}" style="display: flex; flex-wrap: wrap; gap: 2px 6px; align-items: center; margin-left: -2px"><sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="1"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="color: #AEAEB2">{{ c.sep }}</span><button type="button" data-crumb="{{ c.k }}" style="min-height: 28px; padding: 0 2px; border: none; background: none; font-family: inherit; font-size: 13px; color: {{ c.c }}; font-weight: {{ c.w }}; cursor: pointer">{{ c.name }}</button></span></sc-for></div>
+<div style="font-size: 12px; color: #6E6E73">{{ graphHint }}</div>
+<div class="gscr" style="display: flex; flex-direction: column"><div class="gbox" role="group" aria-label="议题关联图（概念链接图）" onClick="{{ onNode }}" style="position: relative; width: 100%; max-width: 600px; aspect-ratio: 560 / 480; align-self: center; margin: 4px 0">
+<span class="gring" aria-hidden="true" style="left: 28.571%; top: 25.000%; width: 42.857%; height: 50.000%"></span><span class="gring" aria-hidden="true" style="left: 13.393%; top: 7.292%; width: 73.214%; height: 85.417%"></span>
+<svg viewBox="0 0 560 480" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; overflow: visible"><g fill="none" stroke-linecap="round"><sc-for list="{{ links }}" as="l"><path d="{{ l.d }}" style="stroke: {{ l.c }}; stroke-width: {{ l.w }}"></path></sc-for></g></svg>
+<span aria-hidden="true" class="chip" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 9px 18px; border-radius: 999px; background: #1D1D1F; color: #FFFFFF; font-size: 14px; font-weight: 600; line-height: 1.3; opacity: {{ gRootOp }}; pointer-events: none">{{ meta.brand }}</span>
+<sc-for list="{{ nodes }}" as="n" hint-placeholder-count="12"><button type="button" class="chip" data-node="{{ n.i }}" aria-pressed="{{ n.on }}" style="position: absolute; left: {{ n.left }}; top: {{ n.top }}; transform: translate(-50%, -50%); opacity: {{ n.op }}; pointer-events: {{ n.pe }}; padding: {{ n.pad }}; margin: 0; border: none; border-radius: 999px; background: {{ n.bg }}; box-shadow: {{ n.sh }}; color: {{ n.fg }}; font-family: inherit; font-size: {{ n.fs }}; font-weight: {{ n.fw }}; line-height: 1.3; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; cursor: pointer"><span aria-hidden="true" style="display: {{ n.hotD }}; width: 6px; height: 6px; border-radius: 50%; background: #C8102E; flex: none"></span><span>{{ n.name }}</span><span class="tip">{{ n.tip }}</span></button></sc-for>
+</div>
+<div class="ghint" style="display: none; font-size: 12px; color: #6E6E73; text-align: center">左右滑动查看完整关联图</div></div>
+<div onClick="{{ onNode }}" style="display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; min-height: 28px"><span style="font-size: 12px; color: #6E6E73">{{ hiddenLabel }}</span><sc-for list="{{ hiddenTags }}" as="h" hint-placeholder-count="3"><button type="button" data-node="{{ h.i }}" style="min-height: 28px; padding: 0 10px; border: none; border-radius: 14px; background: #F0F0F3; color: #48484A; font-family: inherit; font-size: 12px; cursor: pointer">{{ h.name }}</button></sc-for></div>
+<div style="display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 12px; color: #6E6E73"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 18px; height: 4px; border-radius: 2px; background: #C2C2C8"></span>线越粗，关联越强</span><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 50%; background: #C8102E"></span>负面占比 30% 以上</span><span>悬停查看同时提到的条数</span></div>
+</div></sc-if>
+</div><div style="flex: 1.15 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><h3 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">{{ tagTitle }}</h3><sc-if value="{{ hasTag }}" hint-placeholder-val="{{ false }}"><button type="button" class="lnk" onClick="{{ onTagClear }}" style="font-size: 12px; min-height: 24px">查看全部议题</button></sc-if></div>
+<div style="font-size: 13px; color: #6E6E73; font-variant-numeric: tabular-nums; margin-top: -6px">{{ tagSummary }}</div>
+<sc-if value="{{ hasKw }}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center"><span style="font-size: 12px; color: #6E6E73; margin-right: 4px">负面高频词</span><sc-for list="{{ kwNeg }}" as="k" hint-placeholder-count="3"><span style="display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 8px; background: #FBE9EB; color: #7A0A1C">{{ k.k }}</span></sc-for></div><div style="display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center"><span style="font-size: 12px; color: #6E6E73; margin-right: 4px">正面高频词</span><sc-for list="{{ kwPos }}" as="k" hint-placeholder-count="3"><span style="display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 8px; background: #EDEDF0; color: #1D1D1F">{{ k.k }}</span></sc-for></div></div></sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; padding-top: 6px">
+<div style="display: flex; gap: 10px; align-items: baseline"><span style="font-size: 13px; font-weight: 600">代表性内容</span></div>
+<div role="group" aria-label="排序方式" style="display: flex; gap: 2px; background: #E8E8ED; border-radius: 9px; padding: 2px"><button type="button" onClick="{{ onSortScore }}" aria-pressed="{{ scorePressed }}" style="min-height: 30px; padding: 0 12px; border: none; border-radius: 7px; font-family: inherit; font-size: 12px; cursor: pointer; {{ segScore }}">按代表性</button><button type="button" onClick="{{ onSortTime }}" aria-pressed="{{ timePressed }}" style="min-height: 30px; padding: 0 12px; border: none; border-radius: 7px; font-family: inherit; font-size: 12px; cursor: pointer; {{ segTime }}">按时间</button></div>
+</div>
+<div style="display: flex; flex-direction: column">
+<div class="prow phead" style="padding: 0 0 8px; font-size: 11px; color: #6E6E73"><span>内容</span><span>日期</span><span>来源</span><span>情感</span><span>入选理由</span></div>
+<sc-for list="{{ posts }}" as="p" hint-placeholder-count="5"><div class="prow" style="padding: 11px 0; border-top: 1px solid #EDEDF0">
+<a class="p-title" href="{{ p.url }}" style="min-width: 0; font-size: 14px; font-weight: 500; line-height: 1.5">{{ p.title }}</a>
+<span style="font-size: 12px; color: #6E6E73; font-variant-numeric: tabular-nums; white-space: nowrap">{{ p.date }}</span>
+<span title="{{ p.src }}" style="min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 12px; color: #6E6E73; white-space: nowrap">{{ p.src }}</span>
+<span><span class="pill" style="display: inline-block; {{ p.sentCss }}">{{ p.sent }}</span></span>
+<span style="font-size: 12px; color: #6E6E73; white-space: nowrap">{{ p.why }}</span>
+</div></sc-for>
+</div>
+<sc-if value="{{ noPosts }}" hint-placeholder-val="{{ false }}"><div style="font-size: 13px; color: #6E6E73; padding: 4px 0">该议题下没有达到入选门槛的内容，只计入统计。</div></sc-if>
+<div style="font-size: 12px; color: #6E6E73; line-height: 1.7; border-top: 1px solid #EDEDF0; padding-top: 10px">展示综合得分前 5 条，按互动量、转载量、来源类型、相关度加权排序。{{ postNote }}</div>
+</div></div><aside aria-label="研判 02" style="background: #F5F5F7; border-radius: 14px; padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 16px 36px">
+<div style="flex: 1 1 230px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 11px; letter-spacing: 0.14em; font-weight: 600; color: #6E6E73">研判 02</div>
+<h3 style="margin: 0; font-size: 18px; font-weight: 600; line-height: 1.5; letter-spacing: -0.01em">{{ j2.title }}</h3>
+<div style="font-size: 12px; color: #6E6E73">基于上方数据的判断与建议。</div>
+</div>
+<div style="flex: 3.2 1 520px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 16px 28px; font-size: 13.5px; line-height: 1.7"><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">依据</div>{{{ j2.basis }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">{{ j2.actionLabel }}</div>{{{ j2.action }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">跟踪指标</div>{{{ j2.metric }}}</div></div>
+</aside><div style="font-size: 12px; color: #6E6E73; line-height: 1.7">一条内容可带多个议题标签。数据来源见页面底部。<a href="#h-method">查看来源与口径</a></div></section>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; padding: 18px 4px 0"><span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: #6E6E73">03</span><h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">竞品分析</h2><span style="font-size: 13px; color: #6E6E73">声量、评价与最新动态</span></div>
+<section style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04); box-sizing: border-box; min-width: 0; padding: 26px 28px; display: flex; flex-direction: column; gap: 22px"><div style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between"><div style="font-size: 12px; color: #6E6E73">{{ compCaption }}</div><button type="button" class="obtn" onClick="{{ onEditComps }}"><svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10"><path d="M5 1v8M1 5h8" stroke="#1D1D1F" stroke-width="1.5" stroke-linecap="round"></path></svg>编辑竞品组</button></div>
+<div style="display: flex; flex-wrap: wrap; gap: 28px 48px; align-items: flex-start"><div style="flex: 1.3 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline"><h3 id="h-comp" style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">声量与评价</h3><span style="color: #6E6E73; font-size: 12px">{{ rangeName }} · {{ platName }}</span></div>
+<div class="{{ engCls }}" onClick="{{ onComp }}" style="display: flex; flex-direction: column; gap: 2px; margin: 0 -12px">
+<div class="frow" style="padding: 0 12px 6px; font-size: 11px; color: #6E6E73"><span>名称</span><span>声量（条）</span><span class="f-en" style="text-align: right; white-space: nowrap">条均互动</span><span class="f-ns" style="text-align: right; white-space: nowrap">净情感度</span><span style="text-align: right; white-space: nowrap">营收同比</span></div>
+<sc-for list="{{ comps }}" as="c"><sc-if value="{{ c.gh }}"><div style="display: flex; gap: 10px; align-items: baseline; padding: 14px 12px 4px; margin-top: 4px; border-top: 1px solid #EDEDF0"><span style="font-size: 13px; font-weight: 600">{{ c.g }}</span><span style="font-size: 12px; color: #6E6E73">{{ c.gn }}</span></div></sc-if><button type="button" class="frow rowbtn" data-comp="{{ c.i }}" aria-pressed="{{ c.x }}" style="width: 100%; box-sizing: border-box; min-height: 54px; padding: 6px 12px; margin: 0; border: none; border-radius: 12px; font-family: inherit; color: #1D1D1F; text-align: left; background: {{ c.bg }}; cursor: {{ c.cur }}">
+<span style="display: flex; flex-direction: column; line-height: 1.35; min-width: 0"><span style="font-size: 14px; font-weight: {{ c.w }}; white-space: nowrap">{{ c.n }}</span><span style="font-size: 11px; color: #6E6E73; white-space: nowrap">{{ c.cat }}</span></span>
+<span style="display: flex; align-items: center; gap: 8px; min-width: 0"><sc-if value="{{ c.ok }}"><span aria-hidden="true" style="flex: none; width: {{ c.bw }}; height: 12px; display: flex; gap: 1px; border-radius: 0 4px 4px 0; overflow: hidden"><i style="width: {{ c.wn }}; background: #DB444B"></i><i style="width: {{ c.wu }}; background: #D2D2D7"></i><i style="width: {{ c.wp }}; background: #48484A"></i></span><span style="font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums">{{ c.vol }}</span></sc-if><sc-if value="{{ c.low }}"><span style="font-size: 12px; color: #6E6E73">{{ c.lowTxt }}</span></sc-if></span>
+<span class="f-en" style="text-align: right; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.35">{{ c.eng }}<span style="display: block; font-size: 11px; color: #6E6E73">{{ c.posts }}</span></span>
+<span class="f-ns" style="color: {{ c.nsc }}; text-align: right; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap">{{ c.ns }}</span>
+<span style="text-align: right; font-size: 13.5px; font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.35">{{ c.rev }}<span style="display: block; font-size: 11px; color: #6E6E73">{{ c.per }}</span></span>
+</button></sc-for>
+</div>
+<div style="font-size: 12px; color: #6E6E73">点击竞品，右侧只显示它的动态。声量：每一行用自己的名称每天搜同样多的条数，统计所选时间内的新内容。{{ engHint }}</div>
+</div><div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline"><h3 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.005em">竞品动态</h3><span style="font-size: 14px; font-weight: 500">{{ compTitle }}</span><sc-if value="{{ hasComp }}" hint-placeholder-val="{{ false }}"><button type="button" class="lnk" onClick="{{ onCompClear }}" style="font-size: 12px; min-height: 24px">查看全部竞品</button></sc-if></div>
+<div style="font-size: 12.5px; color: #6E6E73; margin-top: -4px">{{ compSub }}</div><sc-if value="{{ hasVoice }}"><div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px; line-height: 1.7"><span style="font-weight: 500">讨论焦点</span><sc-if value="{{ hasVP }}"><span style="color: #6E6E73"><span style="color: #1D1D1F; margin-right: 6px">正面</span>{{ voicePos }}</span></sc-if><sc-if value="{{ hasVN }}"><span style="color: #6E6E73"><span style="color: #1D1D1F; margin-right: 6px">负面</span>{{ voiceNeg }}</span></sc-if></div></sc-if>
+<div style="display: flex; flex-direction: column"><sc-for list="{{ citems }}" as="m" hint-placeholder-count="5"><div style="display: flex; flex-direction: column; gap: 5px; padding: 12px 0; border-top: 1px solid #EDEDF0">
+<div style="font-size: 14px; line-height: 1.6">{{ m.x }}</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 12px; color: #6E6E73"><span style="font-variant-numeric: tabular-nums">{{ m.d }}</span><span style="color: #1D1D1F; font-weight: 500">{{ m.co }}</span><span class="pill" style="background: none; color: #6E6E73; box-shadow: inset 0 0 0 1px #C7C7CC">{{ m.k }}</span><span>{{ m.meta }}</span><a class="csrc" href="{{ m.u }}" style="margin-left: auto">{{ m.s }}</a></div>
+</div></sc-for></div>
+<sc-if value="{{ hasComp }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ hasObs }}"><div style="font-size: 13px; line-height: 1.7; color: #6E6E73; border-top: 1px solid #EDEDF0; padding-top: 12px"><span style="color: #1D1D1F; font-weight: 500; margin-right: 10px">说明</span><span>{{ compObs }}</span><sc-for list="{{ compObsSrcs }}" as="o" hint-placeholder-count="1"><span>（来源：<a href="{{ o.u }}">{{ o.s }}</a>）</span></sc-for></div></sc-if></sc-if>
+</div></div><aside aria-label="研判 03" style="background: #F5F5F7; border-radius: 14px; padding: 22px 24px; display: flex; flex-wrap: wrap; gap: 16px 36px">
+<div style="flex: 1 1 230px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 11px; letter-spacing: 0.14em; font-weight: 600; color: #6E6E73">研判 03</div>
+<h3 style="margin: 0; font-size: 18px; font-weight: 600; line-height: 1.5; letter-spacing: -0.01em">{{ j3.title }}</h3>
+<div style="font-size: 12px; color: #6E6E73">基于上方数据的判断与建议。</div>
+</div>
+<div style="flex: 3.2 1 520px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 16px 28px; font-size: 13.5px; line-height: 1.7"><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">依据</div>{{{ j3.basis }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">{{ j3.actionLabel }}</div>{{{ j3.action }}}</div><div><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; margin-bottom: 4px">跟踪指标</div>{{{ j3.metric }}}</div></div>
+</aside><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px 36px; font-size: 12.5px; line-height: 1.7; color: #6E6E73">
+<sc-if value="{{ hasEng }}"><div><span style="color: #1D1D1F; font-weight: 500">条均互动</span>　提及该公司的社媒内容，点赞、评论、转发之和 ÷ 条数。衡量讨论的参与度：声量高而互动低，多为发稿曝光；两者都高，说明引发了真实讨论。</div></sc-if>
+<div><span style="color: #1D1D1F; font-weight: 500">净情感度</span>　（正面 − 负面）÷（正面 + 负面），取值 −1 到 +1。不受声量影响，用于比较各家的评价倾向；监测对象明显低于同组，说明负面源于自身而非行业共性。</div>
+</div>
+<div style="font-size: 12px; color: #6E6E73; line-height: 1.7">{{{ compFoot }}}</div></section>
+<section aria-labelledby="h-method" style="background: #FFFFFF; border-radius: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04); box-sizing: border-box; min-width: 0; display: flex; flex-direction: column">
+<button type="button" onClick="{{ onMethod }}" aria-expanded="{{ methodX }}" class="rowbtn mhead" style="display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; width: 100%; box-sizing: border-box; padding: 22px 28px; margin: 0; border: none; border-radius: 20px; background: none; font-family: inherit; color: #1D1D1F; text-align: left; cursor: pointer">
+<h2 id="h-method" style="margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em">数据来源与口径</h2>
+<span class="msub" style="font-size: 13px; color: #6E6E73">数据采集方式与指标计算方法</span>
+<span class="mtog" style="margin-left: auto; align-self: center; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #6E6E73">{{ methodLabel }}<span aria-hidden="true" style="display: inline-flex; transition: transform .15s; transform: {{ methodRot }}"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="#8E8E93" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></span>
+</button>
+<sc-if value="{{ methodOpen }}" hint-placeholder-val="{{ false }}"><div style="display: flex; flex-direction: column; gap: 16px; padding: 4px 28px 26px">
+<div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; padding-bottom: 2px">数据口径</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 18px 36px">
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">来源</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">新闻每天自动采集两次；微博、小红书、抖音按关键词采集后上传。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">关键词</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">品牌名、产品名和常见简称，剔除同名噪音（如“阿里旺旺”）。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">去重</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">同一内容的转载合并计为 1 条。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">适用范围</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">只含可公开检索的内容，适合看趋势和相对高低。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">情感与议题</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">由大模型逐条判定情感、议题和关键词，剔除无关的同名内容；负面内容再复核一次。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">人工抽检</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">暂未进行。</div></div>
+</div>
+<div style="border-top: 1px solid #EDEDF0; padding-top: 16px; margin-top: 4px"><div style="font-size: 11px; letter-spacing: 0.1em; color: #6E6E73; padding-bottom: 2px">指标定义</div></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 18px 36px">
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">声量</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">去重后提到监测对象的内容条数。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">同口径声量</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">竞品对比用。每家都只按公司名称搜，每个平台每次只取前 10 条，新闻全取；监测对象多抓的部分和评论不计入。条数反映的是近期新内容出现得多快，比较相对高低，不是全网总量。净情感度、条均互动也按这个样本算。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">负面占比</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">负面条数 ÷ 全部条数；评论区负面集中的帖子也算负面。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">评论</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">微博、抖音每条取前 20 条热评，小红书取页面显示的热评；只用来判断帖子的评论区倾向，不计入声量。评论只在采集时读取，重点帖子会定期回访。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">每日负面条数</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">红色是属于跟踪事件的负面，浅红是零散负面。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">走势</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">近 7 天负面条数与前 7 天比：多 50% 且多 3 条以上为上升，少三分之一且少 3 条以上为回落，其余平稳。近两周条数太少时，看这件事自己的高峰：高峰时一周 5 条以上、现在不到三分之一为回落，从没多过为零星。出现不满 7 天的事件标“新出现”，走势按它出现以来的前后两半比较；近 3 天急升显示“升温快”。社媒持续采集不满两周时，前后比较只算新闻；只有社媒内容的事件标“数据积累中”。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">事件</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">有明确起因的一件具体的事，由模型归类，可展开核对；没有具体起因的算零散负面。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">扩大迹象</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">升温（近 3 天日均达到此前 14 天的 3 倍）、跨平台、高互动（前 5%）、评论区负面集中、涉及产品安全。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">被大量收藏</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">小红书、抖音的负面内容收藏不少于 50、且达到点赞的一半，多是避雷类内容，热度过后仍会影响购买。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">事件等级</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">关注＝没有扩大迹象；二级＝出现任一迹象；一级＝涉及产品安全且已升温或跨平台。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">传播路径</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">“谁先提的”指采集到的最早一条；先后顺序不代表谁影响了谁；热度判断不了有没有水军。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">近 7 天变化</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">议题近 7 天声量与此前 7 天相比。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">关联强度</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">两个议题被同一条内容同时提到的条数，越多连线越粗。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">代表性内容</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">按互动量、转载量、来源类型和相关度综合排序，每个议题取前 5 条。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">净情感度</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">（正面 − 负面）÷（正面 + 负面），取值 −1 到 +1。</div></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="font-size: 13px; font-weight: 600">条均互动</div><div style="font-size: 13px; line-height: 1.7; color: #6E6E73">社媒内容的点赞、评论、转发之和 ÷ 条数。</div></div>
+</div>
+</div></sc-if>
+</section>
+<footer style="font-size: 12px; color: #6E6E73; padding: 4px 4px 0">{{ meta.footer }}<br>© 2026 Aurora Xu。保留所有权利。本页面的设计、分析框架、指标定义与代码为作者原创，未经书面许可不得复制、修改或商用；页面引用的帖子与新闻版权归原作者所有。</footer>
+
+</script>
+<script src="data.js"></script>
+<script>
+// ---- tiny template engine: {{ path }} (escaped), {{{ path }}} (raw html), <sc-for list as>, <sc-if value>, onXxx="{{ handler }}"
+var TPL = (function () {
+function parse(src) {
+var re = /<sc-(for|if)\b([^>]*)>|<\/sc-(for|if)>/g, root = { kids: [] }, stack = [root], last = 0, m;
+function attr(s, n) { var r = new RegExp(n + '="\\{\\{\\s*([^}\\s]+)\\s*\\}\\}"').exec(s) || new RegExp(n + '="([^"]*)"').exec(s); return r ? r[1] : null; }
+while ((m = re.exec(src))) {
+if (m.index > last) stack[stack.length - 1].kids.push({ t: 'text', s: src.slice(last, m.index) });
+last = re.lastIndex;
+if (m[1]) { var n = m[1] === 'for' ? { t: 'for', list: attr(m[2], 'list'), as: attr(m[2], 'as'), kids: [] } : { t: 'if', expr: attr(m[2], 'value'), kids: [] }; stack[stack.length - 1].kids.push(n); stack.push(n); }
+else stack.pop();
+}
+if (last < src.length) root.kids.push({ t: 'text', s: src.slice(last) });
+return root.kids;
+}
+function look(path, scopes) {
+var parts = path.split('.'), v;
+for (var i = scopes.length - 1; i >= 0; i--) { if (scopes[i] != null && Object.prototype.hasOwnProperty.call(scopes[i], parts[0])) { v = scopes[i][parts[0]]; break; } }
+for (var j = 1; j < parts.length && v != null; j++) v = v[parts[j]];
+return v;
+}
+function esc(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function run(nodes, scopes, reg) {
+var out = '';
+nodes.forEach(function (n) {
+if (n.t === 'text') {
+out += n.s.replace(/on([A-Z]\w+)="\{\{\s*([^}\s]+)\s*\}\}"/g, function (_, e, p) { var f = look(p, scopes); if (typeof f !== 'function') return ''; reg.push(f); return 'data-ev-' + e.toLowerCase() + '="' + (reg.length - 1) + '"'; })
+.replace(/\{\{\{\s*([^}\s]+)\s*\}\}\}/g, function (_, p) { var v = look(p, scopes); return v == null ? '' : String(v); })
+.replace(/\{\{\s*([^}\s]+)\s*\}\}/g, function (_, p) { return esc(look(p, scopes)); });
+} else if (n.t === 'for') {
+(look(n.list, scopes) || []).forEach(function (it) { var sc = {}; sc[n.as] = it; out += run(n.kids, scopes.concat([sc]), reg); });
+} else if (look(n.expr, scopes)) out += run(n.kids, scopes, reg);
+});
+return out;
+}
+return { parse: parse, run: run };
+})();
+
+// ---- page logic: everything on the page is computed from window.DATA (written by the R pipeline)
+(function () {
+var SETS = window.DATASETS || { order: [], pending: [], sets: {} };
+var D, N, START, SPAN, VIEW, curId, state = {}, root = document.getElementById('root');
+var AST = TPL.parse(document.getElementById('tmpl').textContent);
+var INK = '#1D1D1F', SEC = '#6E6E73', RED = '#C8102E';
+function setState(p) { for (var k in p) state[k] = p[k]; render(); }
+function fmt(x) { return String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '0%'; }
+function pick(ev, attr) { var el = ev.target; while (el && el.getAttribute) { var v = el.getAttribute(attr); if (v != null) return v; el = el.parentNode; } return null; }
+function niceMax(v, bases) { v = Math.max(v, 1); for (var k = 0; k < 9; k++) for (var i = 0; i < bases.length; i++) { var c = bases[i] * Math.pow(10, k); if (c >= v) return Math.round(c); } return v; }
+function dateAt(i) { return new Date(START.getTime() + Math.round(i) * 86400000); }
+function md(i) { var t = dateAt(i); return (t.getUTCMonth() + 1) + '/' + t.getUTCDate(); }
+function dayIndex(iso) { return Math.round((new Date(iso + 'T00:00:00Z') - START) / 86400000); }
+function trend3(recent, before, minN) { if (recent + before < minN) return 0; return recent > before * 1.2 + 0.5 ? 1 : recent < before * 0.8 - 0.5 ? -1 : 0; }
+// ---- switch the monitored company: every number on the page is recomputed from that company's dataset
+function noEmoji(t) { return String(t == null ? '' : t).replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '').replace(/\s{2,}/g, ' ').trim(); }
+function cleanSet(d) { if (d._clean) return; d._clean = true;
+(d.events || []).forEach(function (e) { e.title = noEmoji(e.title); e.desc = noEmoji(e.desc); (e.cm || []).forEach(function (c) { c.x = noEmoji(c.x); }); (e.path || []).forEach(function (n) { n.title = noEmoji(n.title); }); });
+(d.items || []).forEach(function (x) { x.title = noEmoji(x.title); }); (d.citems || []).forEach(function (m) { m.x = noEmoji(m.x); }); }
+function use(id) {
+if (!SETS.sets[id]) id = SETS.order[0];
+curId = id; D = SETS.sets[id]; cleanSet(D); state = {}; VIEW = {};
+N = D.series.n; START = new Date(D.series.start + 'T00:00:00Z'); SPAN = N - 1 + Math.max(3, Math.round(N * 0.09));
+document.title = D.meta.brand + ' · 每日资讯';
+
+try { localStorage.setItem('monitor', id); } catch (e) {}
+}
+// ---- the filtered view: daily series follow the platform filter; topics and content follow platform + time range
+var RANGES = [['1', '今日', 1], ['7', '近 7 天', 7], ['30', '近 30 天', 30], ['all', '全部', 0]];
+function view() {
+var p = state.plat == null ? -1 : state.plat, rg = state.range || 'all', key = p + '|' + rg;
+if (VIEW[key]) return VIEW[key];
+var nDays = rg === 'all' ? N : Math.min(N, parseInt(rg, 10)), lo = N - nDays, i;
+var tot = [], neg = []; for (i = 0; i < N; i++) { tot.push(0); neg.push(0); }
+var T = D.topics.map(function (t, j) { return { n: t.n, tot: 0, neg: 0, pos: 0, r7: 0, p7: 0, kn: {}, kp: {}, old: j }; });
+var pair = {}, cnt = 0, cntNeg = 0, cntPos = 0;
+(D.rows || []).forEach(function (r) {
+if (p >= 0 && r[1] !== p) return;
+var d = r[0], s = r[2]; if (d < 0 || d >= N) return;
+tot[d]++; if (s === -1) neg[d]++;
+[r[3], r[4]].forEach(function (ti) { if (ti < 0 || !T[ti]) return; if (d >= N - 7) T[ti].r7++; else if (d >= N - 14) T[ti].p7++; });
+if (d < lo) return;
+cnt++; if (s === -1) cntNeg++; if (s === 1) cntPos++;
+[r[3], r[4]].forEach(function (ti) {
+if (ti < 0 || !T[ti]) return; var t = T[ti]; t.tot++; if (s === -1) t.neg++; if (s === 1) t.pos++;
+var m = s === -1 ? t.kn : s === 1 ? t.kp : null;
+if (m) [r[5], r[6]].forEach(function (k) { if (k >= 0) m[k] = (m[k] || 0) + 1; });
+});
+if (r[3] >= 0 && r[4] >= 0 && r[3] !== r[4]) { var k2 = Math.min(r[3], r[4]) + ',' + Math.max(r[3], r[4]); pair[k2] = (pair[k2] || 0) + 1; }
+});
+function topK(m, n) { return Object.keys(m).sort(function (x, y) { return m[y] - m[x]; }).slice(0, n).map(function (k) { return D.kws[k]; }); }
+var tags = T.filter(function (t) { return t.tot > 0; }).sort(function (x, y) { return y.tot - x.tot || x.old - y.old; }), map = {};
+tags.forEach(function (t, j) { map[t.old] = j; t.tr = trend3(t.r7, t.p7, 3); t.kn = topK(t.kn, 4); t.kp = topK(t.kp, 3); });
+var edges = []; Object.keys(pair).forEach(function (k) { var ab = k.split(','); if (map[ab[0]] != null && map[ab[1]] != null) edges.push([map[ab[0]], map[ab[1]], pair[k]]); });
+var items = [];
+(D.items || []).forEach(function (x) {
+if ((p >= 0 && x.p !== p) || x.di < lo) return;
+var ts = [x.t].concat(x.x || []).map(function (o) { return map[o]; }).filter(function (o) { return o != null; });
+if (ts.length) items.push({ t: ts[0], x: ts.slice(1), d: x.d, k: x.k, o: x.o, s: x.s, sc: x.sc, why: x.why, title: x.title, u: x.u });
+});
+return (VIEW[key] = { TOT: tot, NEG: neg, TAGS: tags, EDGES: edges, ITEMS: items, cnt: cnt, cntNeg: cntNeg, cntPos: cntPos, nDays: nDays });
+}
+var TRW = { '1': '↗ 上升', '0': '→ 平稳', '-1': '↘ 回落', '2': '新出现', '-2': '零星', '-3': '数据积累中' }, TRS = { '1': '上升', '0': '平稳', '-1': '回落' };
+var GREEN = '#1E8E5A';
+var LV = { '一级': 'background: ' + RED + '; color: #FFFFFF', '二级': 'background: #FBE3E7; color: ' + RED, '关注': 'background: #EDEDF0; color: ' + INK, '三级': 'background: #EDEDF0; color: ' + INK };
+function lvCss(l) { return LV[l] || 'background: none; color: ' + SEC + '; box-shadow: inset 0 0 0 1px #C7C7CC'; }
+
+function drag(mode, ev) {
+var track = ev.currentTarget;
+while (track && !(track.getAttribute && track.getAttribute('data-nav'))) track = track.parentNode;
+var w = track ? track.getBoundingClientRect().width : 600;
+var s0 = state.s == null ? 0 : state.s, e0 = state.e == null ? 1 : state.e, x0 = ev.clientX, MIN = Math.min(0.5, 8 / SPAN);
+function mv(m) {
+var d = (m.clientX - x0) / w, s = s0, e = e0;
+if (mode === 'pan') { var sp = e0 - s0; s = Math.min(Math.max(s0 + d, 0), 1 - sp); e = s + sp; }
+else if (mode === 'l') s = Math.min(Math.max(s0 + d, 0), e0 - MIN);
+else e = Math.max(Math.min(e0 + d, 1), s0 + MIN);
+setState({ s: s, e: e });
+}
+function up() { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); }
+window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+ev.preventDefault(); ev.stopPropagation();
+}
+
+function vals() {
+var st = state, R = { meta: D.meta }, V = view(), TOT = V.TOT, NEG = V.NEG;
+var PL = st.plat == null ? -1 : st.plat, RG = st.range || 'all', PNAME = PL < 0 ? '全部平台' : D.plats[PL];
+// ================= trend
+var s = st.s == null ? 0 : st.s, e = st.e == null ? 1 : st.e, span = e - s, z = 1 / span;
+var d0 = Math.max(0, Math.floor(s * SPAN)), d1 = Math.min(N - 1, Math.ceil(e * SPAN)), mx = 0, mi = d0;
+for (var d = d0; d <= d1; d++) if (TOT[d] > mx) { mx = TOT[d]; mi = d; }
+var ymax = Math.max(12, niceMax(mx * 1.12, [1.2, 1.5, 1.8, 2.4, 3, 4.5, 6, 9, 12])), step = ymax / 3;
+var VB = Math.max(10, Math.max.apply(null, TOT) * 1.25);
+R.yl = []; R.yg = [];
+for (var k = 0; k <= 3; k++) { var top = 28 + (1 - k / 3) * 240; R.yl.push({ ltop: (top - 8) + 'px', label: fmt(k * step) }); if (k > 0) R.yg.push({ top: top + 'px' }); }
+var ptop = 28 + (1 - mx / ymax) * 240;
+var pT = TOT.map(function (v, i) { return i + ',' + (VB - v).toFixed(1); }).join(' ');
+R.vbW = SPAN; R.vbH = VB.toFixed(1); R.ptsTot = pT; R.ptsArea = '0,' + VB + ' ' + pT + ' ' + (N - 1) + ',' + VB;
+R.ptsNeg = NEG.map(function (v, i) { return i + ',' + (VB - v).toFixed(1); }).join(' ');
+R.svgH = (240 * VB / ymax) + 'px';
+R.ciW = (z * 100) + '%'; R.ciLeft = (-s * z * 100) + '%'; R.winL = (s * 100) + '%'; R.winW = (span * 100) + '%';
+R.rangeLabel = md(s * SPAN) + ' – ' + md(e * SPAN);
+R.peakLeft = (mi / SPAN * 100) + '%'; R.peakTop = ptop + 'px'; R.peakLabelTop = (ptop - 10) + 'px'; R.peakVal = fmt(mx); R.peakTf = ((mi / SPAN - s) / span) > 0.8 ? 'translateX(calc(-100% - 24px))' : 'none';
+var visDays = SPAN * span, every = visDays > 75 ? 0 : visDays > 32 ? 7 : visDays > 14 ? 2 : 1;
+R.ticks = [];
+for (var i = 0; i < N - 1; i++) {
+var t = dateAt(i), show = every === 0 ? (t.getUTCDate() === 1 || i === 0) : (i % every === 0);
+if (show && N - 1 - i > Math.max(2, visDays * 0.04)) { var tpos = (i / SPAN - s) / span; if (tpos < 0 || tpos >= 0.03 || i === 0) R.ticks.push({ left: (i / SPAN * 100) + '%', label: md(i), c: SEC, w: '400', tf: i === 0 ? 'translateX(0)' : 'translateX(-50%)' }); }
+}
+R.ticks.push({ left: ((N - 1) / SPAN * 100) + '%', label: '今日', c: INK, w: '600', tf: 'translateX(-50%)' });
+var marks = [];
+D.events.forEach(function (ev) { if (!ev.date || ev.mark === false) return; var idx = dayIndex(ev.date); if (idx < 0 || idx > N - 1) return; marks.push({ idx: idx, ev: ev }); });
+marks.sort(function (a, b) { return a.idx - b.idx; });
+var groups = [];
+marks.forEach(function (m) { var g = groups[groups.length - 1]; if (g && (m.idx - g.last) * z / SPAN < 0.02) { g.items.push(m.ev); g.last = m.idx; } else groups.push({ first: m.idx, last: m.idx, items: [m.ev] }); });
+R.evMarks = groups.map(function (g) {
+var a = dateAt(g.first), b = dateAt(g.last), pos = (g.last / SPAN - s) / span;
+var head = (a.getUTCMonth() + 1) + ' 月 ' + a.getUTCDate() + (g.last > g.first ? '–' + b.getUTCDate() : '') + ' 日' + (g.items.length > 1 ? ' · ' + g.items.length + ' 起事件' : '');
+return { cls: pos > 0.55 ? 'ev lft' : 'ev', left: (g.last / SPAN * 100) + '%', aria: head, head: head, items: g.items.map(function (x) { return { level: x.level, lvCss: lvCss(x.level), first: x.first, title: x.title }; }) };
+});
+R.futMarks = (D.future || []).map(function (f) { return { idx: dayIndex(f.date), f: f }; }).filter(function (o) { return o.idx > N - 1 && o.idx <= SPAN; }).map(function (o) { return { left: (o.idx / SPAN * 100) + '%', label: o.f.label, short: o.f.short || o.f.label, tip: o.f.tip || '' }; });
+var sum7 = 0, n7 = Math.min(7, N); for (var q7 = N - n7; q7 < N; q7++) sum7 += TOT[q7];
+var allMx = 0, allMi = 0; TOT.forEach(function (v, i) { if (v > allMx) { allMx = v; allMi = i; } });
+R.trendNote = allMx ? (PL < 0 ? '' : PNAME + '：') + '峰值出现在 ' + (dateAt(allMi).getUTCMonth() + 1) + ' 月 ' + dateAt(allMi).getUTCDate() + ' 日（' + fmt(allMx) + ' 条）。近 7 天日均 ' + (sum7 / n7).toFixed(1) + ' 条。' : PNAME + '暂无内容。';
+R.onPan = function (ev) { drag('pan', ev); }; R.onLeft = function (ev) { drag('l', ev); }; R.onRight = function (ev) { drag('r', ev); };
+
+// ---- 事件的传播路径：横轴是时间，每个圆是这件事里的一条内容，按平台分行。圆越大互动越多，深浅和空心表示账号类型。
+// 只有读到真实转发记录的地方才画连线；其余只表示时间先后，不代表谁影响了谁
+var PT = { media: ['媒体', '#1D1D1F', '#1D1D1F'], big: ['大V', '#6E6E73', '#6E6E73'], official: ['官方号', '#FFFFFF', '#1D1D1F'], user: ['其他账号', '#C7C7CC', '#C7C7CC'] };
+function ptType(vt, f) { return vt === 3 ? 'media' : (vt === 1 || vt === 2 || vt === 4 || vt === 5 || vt === 6 || vt === 7) ? 'official' : (vt === 0 || vt === 200 || vt === 220 || (+f || 0) >= 100000) ? 'big' : 'user'; }
+function ptFans(f) { f = +f || 0; return f >= 1e8 ? (f / 1e8).toFixed(1) + ' 亿' : f >= 1e4 ? (f / 1e4).toFixed(f >= 1e5 ? 0 : 1) + ' 万' : fmt(Math.round(f)); }
+function ptCut(x, n) { x = String(x || '').split(/[_|｜]| - /)[0].trim(); return x.length > n ? x.slice(0, n) + '…' : x; }
+function pathHtml(x, plats) {
+  var ns = (x.path || []).map(function (n, i) { return { i: i, ts: +n.ts || 0, tm: n.tm, p: n.p, o: n.an || n.o, title: n.title, u: n.u, e: +n.e || 0, n: +n.n || 0, sh: +n.sh || 0, lk: +n.lk || 0, cm: +n.cm || 0, f: +n.f || 0, rs: n.rs || [], rt: +n.rt || 0, rg: +n.rg || 0,
+    tp: n.p === '新闻' ? 'media' : n.vt != null ? ptType(n.vt, n.f) : 'user' }; });
+  if (ns.length < 3) return '';
+  var sumE = ns.reduce(function (a, n) { return a + n.e; }, 0), first = ns[0], last = ns[ns.length - 1], topN = ns.slice().sort(function (a, b) { return b.e - a.e; })[0]; if (!topN.e || topN === first) topN = null;
+  var seq = []; ns.forEach(function (n) { if (seq.indexOf(n.p) < 0) seq.push(n.p); });
+  var firstOn = {}; ns.forEach(function (n) { if (!firstOn[n.p]) firstOn[n.p] = n.tm.slice(0, 5); });
+  var who = function (n) { return '<a href="' + esc(n.u) + '" target="_blank" rel="noopener">' + esc(ptCut(n.o, 12)) + '</a>'; };
+  var card = function (lab, main, sub) { return '<div style="flex: 1 1 180px; min-width: 0; padding: 12px 14px; background: #FFFFFF; border-radius: 12px; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 12px; color: #6E6E73">' + lab + '</span><span style="font-size: 14.5px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">' + main + '</span><span style="font-size: 12px; color: #6E6E73">' + sub + '</span></div>'; };
+  var arrow = '<span class="parr" aria-hidden="true" style="flex: none; align-self: center; color: #AEAEB2; font-size: 16px">→</span>';
+  var tpTxt = function (n) { return n.p === '新闻' || n.tp !== 'user' ? PT[n.tp][0] + (n.f ? '，粉丝 ' + ptFans(n.f) : '') : ''; };
+  var cards = [card('谁先提的', who(first), first.tm.slice(0, 5) + ' · ' + first.p + (tpTxt(first) ? ' · ' + tpTxt(first) : ''))];
+  if (topN) cards.push(card('谁带动最多', who(topN), topN.tm.slice(0, 5) + ' · ' + topN.p + ' · 互动 ' + fmt(topN.e) + (sumE > 0 ? '，占这件事的 ' + Math.round(topN.e / sumE * 100) + '%' : '')));
+  cards.push(card('传到了哪里', seq.length + ' 个平台 · ' + ns.length + ' 条内容', (sumE ? '合计互动 ' + fmt(sumE) + ' · ' : '') + '最近一条 ' + last.tm.slice(0, 5)));
+  var order = seq.length > 1 ? '<div style="font-size: 13px; line-height: 1.7; color: #6E6E73"><span style="color: #1D1D1F; font-weight: 500">平台先后</span>　' + seq.map(function (p) { return '<span style="white-space: nowrap"><span style="color: #1D1D1F">' + p + '</span> ' + firstOn[p] + '</span>'; }).join('<span aria-hidden="true" style="color: #AEAEB2">　→　</span>') + '</div>' : '';
+  var soc = ns.filter(function (n) { return n.p !== '新闻'; }), act = soc.filter(function (n) { return n.e > 0; }), quiet = soc.length - act.length, closed = soc.filter(function (n) { return n.lk >= 20 && n.cm === 0; }).length, heat = '';
+  if (!soc.length) heat = '这件事目前只有新闻报道，没有社媒讨论，看不出公众的反应。';
+  else { heat = '社媒内容 ' + soc.length + ' 条，其中 ' + act.length + ' 条有人点赞、评论或转发。';
+    if (soc.length >= 3 && act.length / soc.length < 0.4) heat += '发的条数不少，但大多没有人互动，热度偏虚。';
+    else if (topN && sumE > 0 && topN.e / sumE >= 0.6) heat += '互动集中在一条内容上（占 ' + Math.round(topN.e / sumE * 100) + '%），其余内容反响很小。';
+    else if (act.length) heat += '多数内容都有真实的互动，讨论是实的。';
+    if (closed) heat += '有 ' + closed + ' 条点赞不少但评论为 0，可能关闭了评论区。'; }
+  var heatHtml = '<div style="font-size: 13px; line-height: 1.7; color: #6E6E73"><span style="color: #1D1D1F; font-weight: 500">热度</span>　' + heat + '</div>';
+  var extra = '';
+  var rpN = ns.filter(function (n) { return n.rg > 0; }).sort(function (a, b) { return b.rg - a.rg; })[0];
+  if (rpN) { var c = { media: 0, big: 0, official: 0, user: 0 }; rpN.rs.forEach(function (r) { c[ptType(r.vt, r.f)]++; }); var named = rpN.rs.filter(function (r) { return ptType(r.vt, r.f) !== 'user'; }).slice(0, 3).map(function (r) { return esc(ptCut(r.n, 10)) + '（' + PT[ptType(r.vt, r.f)][0] + '，粉丝 ' + ptFans(r.f) + '）'; });
+    extra = '<div style="font-size: 13px; line-height: 1.7; color: #6E6E73"><span style="color: #1D1D1F; font-weight: 500">谁转发了</span>　' + who(rpN) + ' 这条读到 ' + fmt(rpN.rg) + ' 条转发' + (rpN.rt ? '（共被转发 ' + fmt(rpN.rt) + ' 次）' : '') + '：媒体 ' + c.media + ' 个、大V ' + c.big + ' 个、官方号 ' + c.official + ' 个' + (named.length ? '。其中有 ' + named.join('、') : '') + '。</div>'; }
+  return '<div style="display: flex; flex-direction: column; gap: 12px; padding: 4px 0 16px"><div style="display: flex; flex-wrap: wrap; gap: 10px">' + cards.join(arrow) + '</div>'
+    + order + heatHtml + extra + '</div>';
+}
+// ================= alert zone
+var nd = RG === 'all' ? N : Math.min(N, Math.max(7, parseInt(RG, 10))), NEG30 = NEG.slice(N - nd), TOT30 = TOT.slice(N - nd), thr = D.alert.threshold, today = NEG[N - 1];
+var mxN = Math.max.apply(null, NEG30), mxT = Math.max.apply(null, TOT30.concat([1])), ymM = Math.max(mxN * 1.1, 3), ymB = Math.max(mxN * 1.2, 3), unit = 204 / ymB;
+var dsel = st.day == null ? nd - 1 : st.day;
+R.ndLabel = RG === 'all' ? '全部 ' + N + ' 天' : '近 ' + nd + ' 天'; var lstep = nd > 60 ? 14 : nd > 20 ? 5 : nd > 10 ? 2 : 1;
+var STATUS = D.alert.status || '平稳';
+var overN = NEG30.filter(function (v) { return v > thr; }).length, sumN = NEG30.reduce(function (a, b) { return a + b; }, 0), totW = TOT30.reduce(function (x, y) { return x + y; }, 0);
+var pN = 0, pT = 0; for (var q = Math.max(0, N - 2 * nd); q < N - nd; q++) { pN += NEG[q]; pT += TOT[q]; }
+R.kToday = fmt(today); R.thr = fmt(Math.max(mxN, 1)); R.showTot = nd <= 31; R.totHint = nd <= 31 ? ' · 日期下方灰色小字是当天全部内容的条数' : '';
+// 四个摘要：多严重、在说什么、在哪说、是不是还在继续
+var byT = {}, byP = {}, bySrc = {}, lastNeg = -1, loA = N - nd, nCf = 0;
+(D.rows || []).forEach(function (r) { if (r[0] < loA || r[0] >= N || (PL >= 0 && r[1] !== PL) || r[2] !== -1) return;
+if (r[9] === 1) nCf++; if (r[3] >= 0) byT[r[3]] = (byT[r[3]] || 0) + 1; byP[r[1]] = (byP[r[1]] || 0) + 1; if (r[7] != null) bySrc[r[7]] = 1; if (r[0] > lastNeg) lastNeg = r[0]; });
+var nSrc = Object.keys(bySrc).length;
+var tTop = Object.keys(byT).sort(function (a, b) { return byT[b] - byT[a]; })[0], pTop = Object.keys(byP).sort(function (a, b) { return byP[b] - byP[a]; })[0], ago = N - 1 - lastNeg;
+R.tiles = [
+{ label: '负面占比', value: totW ? Math.round(sumN / totW * 100) + '%' : '—', sub: totW ? fmt(sumN) + ' / ' + fmt(totW) + ' 条' + (pT >= 10 ? ' · 上期 ' + Math.round(pN / pT * 100) + '%' : '') : '' },
+{ label: '评论区负面集中', value: nCf + ' 条帖子', sub: nCf ? '评论里三成以上是负面' : '没有帖子的评论区出现负面集中' },
+{ label: '负面内容的来源', value: sumN ? (nSrc ? nSrc + ' 个' : '—') : '—', sub: sumN && nSrc ? '不同的媒体或账号' : '' },
+{ label: '最近一条负面', value: lastNeg < 0 ? '—' : ago === 0 ? '今日' : ago + ' 天前', sub: lastNeg < 0 ? '' : md(lastNeg) }
+];
+R.prevShare = pT >= 5 ? Math.round(pN / pT * 100) + '%' : '—';
+R.nEvents = 0;
+R.nNoise = fmt(D.alert.noise || 0);
+R.avgNeg = (NEG30.reduce(function (a, b) { return a + b; }, 0) / nd).toFixed(1);
+R.miniThrLab = (Math.max(mxN, 1) / ymM * 96 - 7) + 'px'; R.day0 = md(N - nd);
+var tk = [0]; if (mxN >= 4) tk.push(Math.round(mxN / 2)); tk.push(Math.max(mxN, 1));
+R.negTicks = tk.map(function (v) { return { v: fmt(v), b: (24 + v * unit - 7) + 'px' }; });
+var EVD = []; for (var qe = 0; qe < N; qe++) EVD.push(0);
+D.rows.forEach(function (r) { var tn = D.topics[r[3]] && D.topics[r[3]].n; if (r[2] === -1 && (PL < 0 || r[1] === PL) && r[8] >= 0) EVD[r[0]]++; });
+R.days = NEG30.map(function (v, i) {
+var on = i === dsel, tv = TOT30[i], h = v ? Math.max(v * unit, 3) : 0, evn = Math.min(v, EVD[N - nd + i] || 0), eh = v ? h * evn / v : 0, sh = h - eh, lab = i === nd - 1 ? '今日' : ((nd - 1 - i) % lstep === 0 && nd - 1 - i >= lstep ? md(N - nd + i) : '');
+return { i: String(i), h: h + 'px', r: '3px 3px 0 0', tot: fmt(tv), eh: eh + 'px', sh: Math.max(sh - (eh && sh ? 2 : 0), 0) + 'px', sb: (24 + eh + (eh && sh ? 2 : 0)) + 'px', er: sh ? '0' : '3px 3px 0 0', meh: (v ? Math.max(v / ymM * 96, 3) * evn / v : 0) + 'px', c: '#DB444B', bg: on ? '#F5F5F7' : 'transparent', val: v && (on || nd <= 31) ? fmt(v) : '', vb: (h + 28) + 'px', lab: lab,
+labWeight: i === nd - 1 ? '600' : '400', labColor: i === nd - 1 ? INK : SEC, aria: md(N - nd + i) + '，全部 ' + tv + ' 条，负面 ' + v + ' 条',
+mh: (v ? Math.max(v / ymM * 96, 3) : 0) + 'px', mc: '#F1B4BD' };
+});
+R.negSmall = !st.neg; R.negBig = !!st.neg;
+R.onNegOpen = function () { setState({ neg: true }); }; R.onNegClose = function () { setState({ neg: false }); };
+R.onDay = function (ev) { var v = pick(ev, 'data-day'); if (v != null) setState({ day: parseInt(v, 10) }); };
+R.dayDate = md(N - nd + dsel) + (dsel === nd - 1 ? '（今日）' : ''); R.dayNeg = fmt(NEG30[dsel]); R.dayTot = fmt(TOT30[dsel]);
+var dAbs = N - nd + dsel; R.dayItems = (D.items || []).filter(function (x) { return x.di === dAbs && x.s === -1 && (PL < 0 || x.p === PL); }).sort(function (a, b) { return (b.e || 0) - (a.e || 0); });
+var dayE = R.dayItems.reduce(function (a, x) { return a + (x.e || 0); }, 0); R.dayEng = dayE ? fmt(dayE) : '—';
+R.dayItems = R.dayItems.slice(0, 5).map(function (x) { var inEv = x.ev >= 0; return { title: x.title, u: x.u, o: String(x.o || '').split(/[_|｜]| - /)[0].trim() + (x.e ? ' · 互动 ' + fmt(x.e) : ''), dot: inEv ? '#DB444B' : '#F1B4BD' }; });
+R.hasDayItems = R.dayItems.length > 0;
+R.dayLine = NEG30[dsel] ? '当天的负面内容' + (NEG30[dsel] > R.dayItems.length ? '（按互动量列出前 ' + R.dayItems.length + ' 条）' : '') : '当天没有负面内容';
+R.dayShare = TOT30[dsel] ? (NEG30[dsel] / TOT30[dsel] * 100).toFixed(1) + '%' : '0%';
+var w = st.w == null ? -1 : st.w;
+var rdays = RG === 'all' ? N : parseInt(RG, 10);
+var evPl = function (x, idx) { if (PL < 0) return true; for (var q = 0; q < D.rows.length; q++) { var r = D.rows[q]; if (r[8] === idx && r[1] === PL) return true; } return false; };
+var evIn = function (x, idx) { var l = x.dil != null ? x.dil : dayIndex(x.date); return l >= N - rdays && evPl(x, idx); };
+R.watch = D.events.map(function (x, i) {
+if (!evIn(x, i)) return null;
+var on = w === i;
+var isHot = x.kind === 'hot';
+var ended = x.active === false, isNew = !ended && x.di0 === N - 1;
+return { hot: isHot, ended: ended, i: String(i), level: isNew ? x.level + ' · 今日新增' : ended ? '近期无新增' : x.level, lvCss: isHot || ended ? 'background: #EDEDF0; color: ' + SEC : lvCss(x.level), title: x.title, first: x.first, trend: isHot ? '互动 ' + fmt(x.eng || 0) : (x.spread || '—'), fcColor: isHot || ended ? SEC : (x.fast || x.trend === 1) ? RED : INK, forecast: isHot ? '' : ended ? '近 7 天无新增' : x.fast ? '↗ 升温快' : x.isnew ? (x.life <= 1 ? '新出现 · 今日首次' : '新出现 · ' + TRW[String(x.trend || 0)]) : TRW[String(x.trend || 0)], saved: (x.saved || 0) > 0, risk: !isHot, fast: !!x.fast, lv: x.level, open: on, x: on ? 'true' : 'false',
+bg: on ? '#F5F5F7' : 'transparent', bd: on || w === i + 1 || i === D.events.length - 1 ? 'transparent' : '#EDEDF0', rot: on ? 'rotate(180deg)' : 'rotate(0deg)', desc: x.desc || '', action: x.action || '',
+hasCm: (x.cm || []).length > 0, cmHead: '评论区点赞最高的负面评论：', cm: (x.cm || []).map(function (q) { return { x: '“' + q.x + '”', l: q.l > 0 ? '赞 ' + fmt(q.l) : '' }; }),
+hasHts: (x.hts || []).length > 0, hts: (x.hts || []).map(function (h) { return { t: '#' + h.t + '#', m: '共 ' + fmt(h.n) + ' 条内容 · ' + fmt(h.a) + ' 个账号 · ' + h.pl + (h.e > 0 ? ' · 互动 ' + fmt(h.e) : '') }; }),
+hasPath: (x.path || []).length > 1, pathOpen: on && st.path === i, px: on && st.path === i ? 'true' : 'false',
+pathLabel: on && st.path === i ? ((x.path || []).length >= 3 ? '收起传播路径' : '收起相关内容') : ((x.path || []).length >= 3 ? '查看传播路径' : '查看相关内容'),
+pathHtml: on && st.path === i ? pathHtml(x, D.plats) : '', listHead: (x.path || []).length > 5 && st.pall !== i ? '共 ' + (x.path || []).length + ' 条，显示关键 5 条' : '全部 ' + (x.path || []).length + ' 条',
+listCss: st.pall === i ? 'max-height: 400px; overflow-y: auto; padding-right: 12px; border-bottom: 1px solid #E5E5EA' : '', hasMore: (x.path || []).length > 5, moreLabel: st.pall === i ? '收起' : '展开全部',
+path: (function () { var all = (x.path || []).map(function (n, k) { n._k = k; return n; }), keep = all;
+if (all.length > 5 && st.pall !== i) { var mid = all.slice(1, -1).sort(function (a, b) { return (b.e + b.n) - (a.e + a.n); }).slice(0, 3); keep = [all[0]].concat(mid, [all[all.length - 1]]).sort(function (a, b) { return a._k - b._k; }); }
+return keep.map(function (n) { var who = n.an || n.o, m = [n.p === who ? who : n.p + ' · ' + who]; if (n.n > 0) m.push('被转载 ' + fmt(n.n) + ' 次'); if (n.e > 0) m.push('互动 ' + fmt(n.e));
+var rl = n.role === '扩散最广' ? '互动最高' : n.role, tag = rl === '最早' ? '起点' : rl;
+return { tm: n.tm, role: tag, css: tag === '互动最高' ? 'background: ' + INK + '; color: #FFFFFF' : tag === '起点' ? 'background: none; color: ' + INK + '; box-shadow: inset 0 0 0 1px ' + INK : 'display: none', title: n.title, u: n.u, meta: m.join(' · ') }; }); })() };
+});
+R.watch = R.watch.filter(function (x) { return x && x.risk; }); R.noWatch = R.watch.length === 0;
+var RISK = R.watch.filter(function (x) { return x.risk && !x.ended; }), nSig = RISK.filter(function (x) { return x.lv === '二级' || x.lv === '一级'; }).length;
+R.nEvents = RISK.length; R.nHot = R.watch.length - RISK.length;
+R.shareBig = String(RISK.length); R.kTodayColor = nSig ? RED : INK;
+R.evLabel = RG === 'all' ? '全部 ' + N + ' 天内' : rdays === 1 ? '今日' : '近 ' + rdays + ' 天内';
+R.shareCap = '项' + (RISK.length ? ' · ' + (nSig ? nSig + ' 项有扩大迹象' : '均无扩大迹象') : '');
+R.heroNote = (PL < 0 ? '' : '只看' + PNAME + '：') + (!RISK.length ? '所选时间范围内，没有近 7 天有新增的负面事件。' : nSig ? '有负面事件出现扩大迹象，需要处理。' : '有负面内容，但没有扩大的迹象，保持关注即可。');
+R.watch.forEach(function (x, k) { if (k === R.watch.length - 1) x.bd = 'transparent'; });
+R.onW = function (ev) { var av = pick(ev, 'data-pall'); if (av != null) { var ai = parseInt(av, 10); setState({ pall: st.pall === ai ? null : ai }); return; } var pv = pick(ev, 'data-path'); if (pv != null) { var pi = parseInt(pv, 10); setState({ path: st.path === pi ? null : pi }); return; } var v = pick(ev, 'data-w'); if (v == null) return; var i = parseInt(v, 10); setState({ w: w === i ? null : i, path: null }); };
+['j1', 'j2', 'j3'].forEach(function (k, i) { var j = (D.judgments || [])[i] || {}; R[k] = { title: j.title || '', basis: j.basis || '', action: j.action || '', metric: j.metric || '', actionLabel: j.actionLabel || '建议' }; });
+
+// ================= topics
+var TAGS = V.TAGS, EDGES = V.EDGES, nT = TAGS.length, K = Math.min(6, nT);
+var trail = st.trail || [], sel = trail.length ? trail[trail.length - 1] : -1, graph = st.tview === 'graph', more = !!st.more;
+var TMAX = niceMax(Math.max.apply(null, TAGS.map(function (t) { return t.tot; }).concat([1])), [1, 2, 4, 5, 8]);
+R.axMid = fmt(TMAX / 2); R.axMax = fmt(TMAX);
+var rows = TAGS.map(function (t, i) {
+var on = sel === i, neu = t.tot - t.neg - t.pos;
+return { i: String(i), name: t.n, total: fmt(t.tot), bg: on ? '#F5F5F7' : 'transparent', on: on ? 'true' : 'false', weight: on ? '600' : '500',
+wAll: (t.tot / TMAX * 100) + '%', wNeg: (t.tot ? t.neg / t.tot * 100 : 0) + '%', wNeu: (t.tot ? neu / t.tot * 100 : 0) + '%',
+trend: TRS[String(t.tr || 0)], trendColor: t.tr === 1 ? INK : SEC, trendWeight: t.tr === 1 ? '600' : '400' };
+});
+R.tagList = more ? rows : rows.slice(0, K);
+R.rankMaxH = more && nT > 7 ? '314px' : 'none';
+R.rankCaption = more ? '全部 ' + nT + ' 个议题，按声量排序' + (nT > 7 ? '，可上下滚动' : '') : '声量最高的 ' + K + ' 个议题（共 ' + nT + ' 个，按声量动态排序）';
+R.moreLabel = nT <= K ? '' : more ? '收起，只看前 ' + K + ' 个' : '展开全部 ' + nT + ' 个议题';
+R.moreRot = more ? 'rotate(180deg)' : 'rotate(0deg)'; R.moreX = more ? 'true' : 'false';
+R.rankView = !graph; R.graphView = graph;
+var SON = 'background: #FFFFFF; color: ' + INK + '; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.10)', SOFF = 'background: none; color: ' + SEC;
+R.segRank = graph ? SOFF : SON; R.segGraph = graph ? SON : SOFF; R.rankPressed = graph ? 'false' : 'true'; R.graphPressed = graph ? 'true' : 'false';
+R.onRank = function () { setState({ tview: 'rank' }); }; R.onGraph = function () { setState({ tview: 'graph' }); }; R.onMore = function () { setState({ more: !more }); };
+R.onTag = function (ev) { var v = pick(ev, 'data-tag'); if (v == null) return; var i = parseInt(v, 10); setState({ trail: sel === i ? [] : [i] }); };
+R.onNode = function (ev) { var v = pick(ev, 'data-node'); if (v == null) return; var i = parseInt(v, 10); if (i === sel) return; var at = trail.indexOf(i); setState({ trail: at >= 0 ? trail.slice(0, at + 1) : trail.concat([i]) }); };
+R.onCrumb = function (ev) { var v = pick(ev, 'data-crumb'); if (v != null) setState({ trail: trail.slice(0, parseInt(v, 10)) }); };
+R.onTagClear = function () { setState({ trail: [] }); };
+// concept-link graph: focus in the centre, linked topics on ring 1, their links on ring 2
+var ADJ = TAGS.map(function () { return []; }), maxC = 1, maxT = Math.max.apply(null, TAGS.map(function (t) { return t.tot; }).concat([1]));
+EDGES.forEach(function (ed) { ADJ[ed[0]].push([ed[1], ed[2]]); ADJ[ed[1]].push([ed[0], ed[2]]); if (ed[2] > maxC) maxC = ed[2]; });
+ADJ.forEach(function (a) { a.sort(function (x, y) { return y[1] - x[1]; }); });
+var GW = 560, GH = 480, CX = 280, CY = 240, R1 = 120, R2 = 205, NSLOT = 40;
+var kidsOf = {}, wOf = [], depth = [], par = [], rootKids = [];
+TAGS.forEach(function (t, i) { depth[i] = 9; wOf[i] = 0; par[i] = -1; });
+if (sel < 0) {
+for (var a1 = 0; a1 < K; a1++) { rootKids.push(a1); depth[a1] = 1; wOf[a1] = TAGS[a1].tot / maxT; kidsOf[a1] = []; }
+for (var a2 = K; a2 < nT; a2++) { var tp = ADJ[a2].filter(function (y) { return y[0] < K; })[0]; if (!tp) continue; kidsOf[tp[0]].push(a2); depth[a2] = 2; wOf[a2] = tp[1] / maxC; par[a2] = tp[0]; }
+} else {
+depth[sel] = 0;
+var level = [sel], dd = 0;
+while (level.length) {
+var next = [];
+level.forEach(function (n) { kidsOf[n] = []; });
+level.forEach(function (n) { ADJ[n].forEach(function (x) { if (depth[x[0]] === 9) { depth[x[0]] = dd + 1; wOf[x[0]] = x[1] / maxC; par[x[0]] = n; kidsOf[n].push(x[0]); next.push(x[0]); } }); });
+level = next; dd++;
+}
+rootKids = kidsOf[sel].slice(0, 10);
+kidsOf[sel].slice(10).forEach(function (c) { depth[c] = 8; });
+}
+var P = [], slots = [];
+TAGS.forEach(function (t, i) { P[i] = [CX, CY]; });
+function pt(r, deg) { var a = deg * Math.PI / 180; return [CX + r * Math.cos(a), CY + r * Math.sin(a)]; }
+function f1(v) { return v.toFixed(1); }
+var k1 = rootKids.length, sector = k1 ? 360 / k1 : 360;
+rootKids.forEach(function (c, i) {
+var a = (k1 === 2 ? 180 : -90) + i * sector;
+P[c] = pt(R1, a);
+slots.push({ d: 'M' + CX + ' ' + CY + ' L' + f1(P[c][0]) + ' ' + f1(P[c][1]), w: f1(2 + wOf[c] * 4), c: '#C2C2C8' });
+var kids = (kidsOf[c] || []).filter(function (x) { return depth[x] === 2; }).slice(0, 4);
+(kidsOf[c] || []).forEach(function (x) { if (depth[x] === 2 && kids.indexOf(x) < 0) depth[x] = 8; });
+var m = kids.length, stp = m > 1 ? Math.min(24, (Math.min(sector, 200) - 16) / (m - 1)) : 0;
+kids.forEach(function (x, j) {
+var b = a + (j - (m - 1) / 2) * stp;
+P[x] = pt(R2 + (m > 2 && j % 2 ? 24 : 0), b);
+var c1 = pt(R1 + (R2 - R1) * 0.72, a), c2 = pt(R1 + (R2 - R1) * 0.28, b);
+slots.push({ d: 'M' + f1(P[c][0]) + ' ' + f1(P[c][1]) + ' C' + f1(c1[0]) + ' ' + f1(c1[1]) + ' ' + f1(c2[0]) + ' ' + f1(c2[1]) + ' ' + f1(P[x][0]) + ' ' + f1(P[x][1]), w: f1(1.4 + wOf[x] * 2.4), c: '#D8D8DD' });
+});
+});
+R.links = slots;
+var PAD_ = ['9px 18px', '6px 13px', '4px 8px'], FS = ['14px', '13px', '12px'], FG = ['#FFFFFF', INK, '#48484A'];
+R.nodes = TAGS.map(function (t, i) {
+var d = depth[i], on = sel === i, show = d <= 2, dk = show ? d : 2, hot = t.tot && t.neg / t.tot >= 0.3;
+var tip = t.n + ' · 共 ' + fmt(t.tot) + ' 条 · 负面 ' + pct(t.neg, t.tot);
+if (sel >= 0 && par[i] >= 0) tip = '与「' + TAGS[par[i]].n + '」同时提到 ' + fmt(wOf[i] * maxC) + ' 条 · 共 ' + fmt(t.tot) + ' 条 · 负面 ' + pct(t.neg, t.tot);
+return { i: String(i), name: t.n, left: (P[i][0] / GW * 100) + '%', top: (P[i][1] / GH * 100) + '%', pad: PAD_[dk], fs: FS[dk], fg: on ? '#FFFFFF' : FG[Math.max(dk, 1)], fw: on ? '600' : dk === 1 ? '500' : '400',
+bg: on ? INK : '#FFFFFF', sh: on ? 'none' : dk === 1 ? 'inset 0 0 0 1px #C7C7CC' : 'none', hotD: hot ? 'block' : 'none', on: on ? 'true' : 'false', op: show ? '1' : '0', pe: show ? 'auto' : 'none', tip: tip };
+});
+R.hiddenTags = []; TAGS.forEach(function (t, i) { if (depth[i] > 2) R.hiddenTags.push({ i: String(i), name: t.n }); });
+R.hiddenLabel = R.hiddenTags.length ? '未画入图中的 ' + R.hiddenTags.length + ' 个议题（与中心没有直接关联，或关联较弱）' : '';
+R.gRootOp = sel < 0 ? '1' : '0';
+R.crumbs = [{ k: '0', sep: '', name: D.meta.brand + ' · 全部议题', c: sel < 0 ? INK : SEC, w: sel < 0 ? '600' : '400' }];
+trail.forEach(function (ti, j) { var last = j === trail.length - 1; R.crumbs.push({ k: String(j + 1), sep: '›', name: TAGS[ti].n, c: last ? INK : SEC, w: last ? '600' : '400' }); });
+R.graphHint = sel < 0 ? '内圈是声量最高的 ' + K + ' 个议题，外圈是与它们关联最强的其余议题。点击任一议题，以它为中心展开' : '内圈是与「' + TAGS[sel].n + '」同时被提到的议题，外圈是它们的下一层关联。点击任一议题继续展开';
+// representative content
+var SENT = { '-1': ['负面', 'background: ' + RED + '; color: #FFFFFF'], '0': ['中性', 'background: #EDEDF0; color: ' + INK], '1': ['正面', 'background: #FFFFFF; color: ' + INK + '; box-shadow: inset 0 0 0 1px #8E8E93'] };
+var byTime = st.psort === 'time';
+var pool = V.ITEMS.filter(function (x) { return sel < 0 || x.t === sel || (x.x || []).indexOf(sel) >= 0; });
+pool.sort(function (a, b) { return byTime ? (a.k < b.k ? 1 : -1) : (b.sc - a.sc || (a.k < b.k ? 1 : -1)); });
+R.posts = pool.slice(0, 5).map(function (x) { var se = SENT[String(x.s)] || SENT['0']; return { date: x.d, src: String(x.o || '').split(/[_|｜]| - /)[0].trim(), title: x.title, url: x.u, sent: se[0], sentCss: se[1], why: x.why || '' }; });
+R.postNote = pool.length > 0 && pool.length < 5 ? '该议题目前只有 ' + pool.length + ' 条内容达到入选门槛。' : '';
+R.noPosts = pool.length === 0;
+R.segScore = byTime ? SOFF : SON; R.segTime = byTime ? SON : SOFF; R.scorePressed = byTime ? 'false' : 'true'; R.timePressed = byTime ? 'true' : 'false';
+R.onSortScore = function () { setState({ psort: 'score' }); }; R.onSortTime = function () { setState({ psort: 'time' }); };
+var cur = sel < 0 ? null : TAGS[sel], sT = 0, sN = 0, sP = 0;
+if (cur) { sT = cur.tot; sN = cur.neg; sP = cur.pos; } else { sT = V.cnt; sN = V.cntNeg; sP = V.cntPos; }
+R.tagTitle = cur ? cur.n : '全部议题';
+var scope = (RG === 'all' ? '' : RANGES.filter(function (r) { return r[0] === RG; })[0][1] + ' · ') + (PL < 0 ? '' : PNAME + ' · ');
+R.tagSummary = scope + fmt(sT) + ' 条 · 负面 ' + pct(sN, sT) + ' · 中性 ' + pct(sT - sN - sP, sT) + ' · 正面 ' + pct(sP, sT) + (cur ? ' · 近 7 天' + TRS[String(cur.tr || 0)] : '');
+R.hasTag = !!cur; R.hasKw = !!cur && ((cur.kn || []).length + (cur.kp || []).length) > 0;
+R.kwNeg = cur ? (cur.kn || []).map(function (k) { return { k: k }; }) : []; R.kwPos = cur ? (cur.kp || []).map(function (k) { return { k: k }; }) : [];
+
+// ================= competitors
+var CLO = N - V.nDays;
+var COMP = (D.comps || []).map(function (c) {
+var a = [0, 0, 0, 0, 0];
+(c.cr || []).forEach(function (x) { if (x[0] < CLO || (PL >= 0 && x[1] !== PL)) return; a[0]++; if (x[2] === 1) a[1]++; if (x[2] === -1) a[2]++; if (x[1] >= 1) { a[3] += x[3]; a[4]++; } });
+return { n: c.n, cat: c.cat, g: c.g || '', sub: c.sub || '', me: c.me, rev: c.rev, per: c.per, fin: c.fin, pos: a[1], neg: a[2], vol: a[0], ns: a[1] + a[2] ? ((a[1] - a[2]) / (a[1] + a[2])).toFixed(2).replace(/^(?!-)/, '+').replace('-', '−') : null, eng: a[4] ? fmt(a[3] / a[4]) : null, posts: a[4] || null };
+});
+var cs = st.comp == null ? -1 : st.comp, GMAX = {}; COMP.forEach(function (c) { GMAX[c.g] = Math.max(GMAX[c.g] || 1, c.vol || 0); });   // 条形按组内最大值缩放：只在组内比较
+R.platName = PNAME; R.rangeName = RG === 'all' ? '全部 ' + N + ' 天' : RANGES.filter(function (r) { return r[0] === RG; })[0][1]; var anyEng = COMP.some(function (c) { return c.eng != null; });
+R.hasEng = true; R.engCls = ''; R.engHint = anyEng ? '条均互动下方是参与计算的社媒条数。' : '';
+R.comps = COMP.map(function (c, i) {
+var on = cs === i, gh = i === 0 || COMP[i - 1].g !== c.g;
+var ok = (c.vol || 0) >= 10;   // 不到 10 条不画条形、不给净情感度：样本太少，比较没有意义
+return { ok: ok, low: !ok, lowTxt: c.vol ? '样本不足 · ' + c.vol + ' 条' : '暂无数据', gh: gh && !!c.g, g: c.g, gn: (D.gnote || {})[c.g] || '', i: c.me ? '' : String(i), n: c.n, cat: c.sub, w: c.me || on ? '600' : '500', bg: on ? '#F5F5F7' : 'transparent', x: on ? 'true' : 'false', cur: c.me ? 'default' : 'pointer',
+bw: ((c.vol || 0) / (GMAX[c.g] || 1) * 70) + '%', wn: (c.vol ? c.neg / c.vol * 100 : 0) + '%', wp: (c.vol ? c.pos / c.vol * 100 : 0) + '%', wu: (c.vol ? (c.vol - c.pos - c.neg) / c.vol * 100 : 0) + '%', nsc: c.ns == null ? SEC : c.ns.charAt(0) === '−' ? RED : INK, vol: fmt(c.vol || 0), eng: c.eng == null || !ok ? '—' : c.eng, posts: c.posts == null ? '' : c.posts + ' 条', ns: c.ns == null || !ok ? '—' : c.ns, rev: c.rev || '—', per: c.per || '' };
+});
+var grps = []; COMP.forEach(function (c) { if (c.g && grps.indexOf(c.g) < 0) grps.push(c.g); });
+R.compCaption = '共 ' + grps.length + ' 组：' + grps.join('、') + '。只在组内比较';
+R.onComp = function (ev) { var v = pick(ev, 'data-comp'); if (v == null || v === '') return; var i = parseInt(v, 10); setState({ comp: cs === i ? null : i }); };
+var cc = cs < 0 ? null : COMP[cs], CI = (D.citems || []).filter(function (m) { return (PL < 0 || (m.ps ? m.ps.indexOf(PL) >= 0 : m.p === PL)) && (m.di == null || m.di >= CLO); });
+var ci = CI.filter(function (m) { return cc ? m.c === cs : m.k !== '财报'; });
+if (!cc) { if (!ci.length) ci = CI; ci = ci.slice(0, 5); }
+R.citems = ci.map(function (m) { return { x: m.x, d: m.d, k: m.k, s: m.s, u: m.u, co: cc ? '' : (COMP[m.c] || {}).n, meta: m.n ? fmt(m.n) + ' 条内容' + (m.na > 1 ? ' · ' + fmt(m.na) + ' 个账号' : '') + (m.e ? ' · 互动 ' + fmt(m.e) : '') : '' }; });
+var cv = cc ? (D.comps[cs] || {}) : null; R.voicePos = cv && cv.kp && cv.kp.length ? cv.kp.join('、') : ''; R.voiceNeg = cv && cv.kn && cv.kn.length ? cv.kn.join('、') : ''; R.hasVP = !!R.voicePos; R.hasVN = !!R.voiceNeg; R.hasVoice = R.hasVP || R.hasVN;
+R.hasComp = !!cc; R.compTitle = cc ? cc.n : '全部竞品';
+R.compSub = cc ? cc.g + (cc.fin ? ' · ' + cc.fin : '') : '按热度和新近程度排序的前 5 件事，同一件事的多条内容合并为一条；财报类在各公司下查看';
+R.compObs = cc && !ci.length ? '所选范围内没有采集到该公司的动态。' : ''; R.compObsSrcs = []; R.hasObs = !!R.compObs;
+R.onCompClear = function () { setState({ comp: null }); };
+R.compFoot = D.compFoot || '';
+var SON2 = 'background: #FFFFFF; color: ' + INK + '; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.10)', SOFF2 = 'background: none; color: ' + SEC;
+R.ranges = RANGES.map(function (r) { var on = RG === r[0]; return { k: r[0], label: r[1], x: on ? 'true' : 'false', css: on ? SON2 : SOFF2 }; });
+R.platBtns = [{ k: '-1', label: '全部', x: PL < 0 ? 'true' : 'false', css: PL < 0 ? SON2 : SOFF2, dis: '', tip: '' }].concat(D.plats.map(function (n, i) { var have = D.platHave[i], on = PL === i;
+return { k: String(i), label: n, x: on ? 'true' : 'false', css: on ? SON2 : SOFF2, dis: have ? '' : 'disabled', tip: have ? '' : '尚未采集到' + n + '的内容' }; }));
+var miss = D.plats.filter(function (n, i) { return !D.platHave[i]; });
+R.filterNote = miss.length ? '灰色平台暂无数据。' : '';
+R.onRange = function (ev) { var v = pick(ev, 'data-range'); if (v == null) return; var o = { range: v, trail: [], day: null, w: null, path: null, neg: false };
+if (v === 'all') { o.s = 0; o.e = 1; } else { var dn = Math.max(parseInt(v, 10), 8); o.s = Math.max(0, (N - dn) / SPAN); o.e = Math.min(1, Math.max(o.s + Math.min(0.5, 8 / SPAN), (N + 0.5) / SPAN)); }
+setState(o); };
+R.onPlat = function (ev) { var v = pick(ev, 'data-plat'); if (v == null) return; var i = parseInt(v, 10); if (i >= 0 && !D.platHave[i]) return; setState({ plat: i < 0 ? null : i, trail: [], comp: null, day: null }); };
+R.swOpen = !!st.sw; R.swX = st.sw ? 'true' : 'false'; R.swRot = st.sw ? 'rotate(180deg)' : 'rotate(0deg)';
+R.targets = SETS.order.map(function (id) { return { id: id, name: id, w: id === curId ? '600' : '400', note: id === curId ? '当前' : '', dis: '' }; }).concat((SETS.pending || []).map(function (id) { return { id: '', name: id, w: '400', note: '采集中', dis: 'disabled' }; }));
+R.onSwitch = function () { setState({ sw: !st.sw }); };
+R.onPickTarget = function (ev) { if (pick(ev, 'data-new') != null) { setState({ sw: false }); openNew(); return; } var v = pick(ev, 'data-target'); if (!v) return; if (v === curId) { setState({ sw: false }); return; } use(v); render(); window.scrollTo(0, 0); };
+R.onEditComps = function () { openEdit(); };
+R.methodOpen = !!st.method; R.methodX = st.method ? 'true' : 'false'; R.methodLabel = st.method ? '收起' : '展开'; R.methodRot = st.method ? 'rotate(180deg)' : 'rotate(0deg)';
+R.onMethod = function () { setState({ method: !st.method }); };
+return R;
+}
+
+function render() {
+var keep = [].map.call(root.querySelectorAll('.scr'), function (el) { return el.scrollTop; }), gk = root.querySelector('.gscr'), gx = gk ? gk.scrollLeft : -1;
+var reg = [];
+root.innerHTML = TPL.run(AST, [vals()], reg);
+[].forEach.call(root.querySelectorAll('*'), function (el) {
+for (var i = 0; i < el.attributes.length; i++) { var a = el.attributes[i]; if (a.name.indexOf('data-ev-') === 0) el.addEventListener(a.name.slice(8), reg[parseInt(a.value, 10)]); }
+});
+[].forEach.call(root.querySelectorAll('.scr'), function (el, i) { if (keep[i]) el.scrollTop = keep[i]; });
+var g2 = root.querySelector('.gscr'); if (g2 && g2.scrollWidth > g2.clientWidth) g2.scrollLeft = gx > 0 ? gx : (g2.scrollWidth - g2.clientWidth) / 2;
+}
+// ---- 新建监测 / 编辑竞品组：表单提交给后台（/api/monitor），后台把名单写进仓库的 config/monitors.csv，随后自动采集并重新生成页面
+var CODE = '';
+function esc(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function api(body, done) {
+fetch((/workers\.dev$/.test(location.hostname) || location.hostname === 'localhost' ? '' : 'https://news-daily-brief.aurora-xu.workers.dev') + '/api/monitor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+.then(function (r) { return r.json().catch(function () { return { ok: false, message: '后台没有响应（状态码 ' + r.status + '）。请确认页面是通过部署后的网址打开的。' }; }); })
+.then(done, function () { done({ ok: false, message: '无法连接后台。这个页面可能是直接用文件打开的，或后台还没有部署。' }); });
+}
+function modal(html) {
+var o = document.createElement('div'); o.className = 'ovl'; o.innerHTML = '<div class="dlg" role="dialog" aria-modal="true">' + html + '</div>';
+o.addEventListener('mousedown', function (ev) { if (ev.target === o) o.remove(); });
+o.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') o.remove(); });
+document.body.appendChild(o); var f = o.querySelector('input'); if (f) f.focus();
+return o;
+}
+function words(v) { return String(v || '').split(/[,，、;；|\n]+/).map(function (x) { return x.trim(); }).filter(Boolean); }
+var CODE_FIELD = '<label>管理口令<input name="code" type="password" autocomplete="off" placeholder="只有知道口令的人才能修改监测名单"></label>';
+var WAIT = '后台会立刻开始采集和分析，通常需要 5 到 10 分钟。完成后刷新页面即可看到。';
+function say(o, ok, text) { var m = o.querySelector('[data-msg]'); m.textContent = text; m.style.color = ok ? INK : RED; }
+function openNew() {
+var o = modal('<h2>新建监测</h2><div style="color:' + SEC + ';font-size:13px">填写后，系统会为这家公司单独采集内容、判定情感和议题，并生成一份同样结构的页面。</div>' +
+'<label>公司或品牌名称<input name="name" placeholder="例如：元气森林"></label>' +
+'<label>关键词（可选，用逗号分隔；留空则只用名称）<input name="kw" placeholder="例如：元气森林, 外星人电解质水"></label>' +
+'<label>要排除的同名词（可选）<input name="noise" placeholder="含有这些词、又不含其他关键词的内容会被剔除"></label>' +
+'<label>竞品（可选，用逗号分隔，之后可以再改）<input name="comps" placeholder="例如：农夫山泉, 康师傅"></label>' + CODE_FIELD +
+'<div data-msg style="font-size:13px;min-height:20px"></div><div class="row"><button type="button" class="obtn" data-x>取消</button><button type="button" class="pbtn" data-ok>开始监测</button></div>');
+o.querySelector('[name=code]').value = CODE;
+o.querySelector('[data-x]').onclick = function () { o.remove(); };
+o.querySelector('[data-ok]').onclick = function () {
+var name = o.querySelector('[name=name]').value.trim(), btn = this; CODE = o.querySelector('[name=code]').value;
+if (!name) return say(o, false, '请填写公司或品牌名称。');
+if (!CODE) return say(o, false, '请填写管理口令。');
+btn.disabled = true; say(o, true, '正在保存……');
+api({ action: 'add_target', code: CODE, name: name, keywords: words(o.querySelector('[name=kw]').value), noise: words(o.querySelector('[name=noise]').value), comps: words(o.querySelector('[name=comps]').value).map(function (n) { return { name: n }; }) }, function (r) {
+btn.disabled = false; say(o, r.ok, r.ok ? '已保存「' + name + '」。' + WAIT + '之后在左上角切换查看。' : (r.message || '保存失败。'));
+if (r.ok) { btn.textContent = '完成'; btn.onclick = function () { o.remove(); }; }
+});
+};
+}
+function openEdit() {
+var list = (D.comps || []).filter(function (c) { return !c.me; }).map(function (c) { return { name: c.n, category: c.cat === '未分类' ? '' : c.cat }; });
+var o = modal('<h2>编辑竞品组</h2><div style="color:' + SEC + ';font-size:13px">「' + esc(D.meta.brand) + '」当前的竞品。点 × 移除，或在下方添加；点保存后统一生效。</div>' +
+'<div data-list style="display:flex;flex-wrap:wrap;gap:8px"></div>' +
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end"><label>公司名称<input name="name" placeholder="例如：三只松鼠"></label><label>品类（可选）<input name="cat" placeholder="例如：休闲零食"></label><label>关键词（可选）<input name="kw" placeholder="逗号分隔"></label></div>' +
+'<div><button type="button" class="obtn" data-add>＋ 加入名单</button></div>' + CODE_FIELD +
+'<div data-msg style="font-size:13px;min-height:20px"></div><div class="row"><button type="button" class="lnk" data-del style="font-size:12px;margin-right:auto">停止监测「' + esc(D.meta.brand) + '」</button><button type="button" class="obtn" data-x>取消</button><button type="button" class="pbtn" data-ok>保存</button></div>');
+o.querySelector('[name=code]').value = CODE;
+function draw() { o.querySelector('[data-list]').innerHTML = list.length ? list.map(function (c, i) { return '<span class="chipx">' + esc(c.name) + (c.category ? '<span style="color:' + SEC + ';font-size:12px">' + esc(c.category) + '</span>' : '') + '<button type="button" data-rm="' + i + '" aria-label="移除 ' + esc(c.name) + '">×</button></span>'; }).join('') : '<span style="color:' + SEC + ';font-size:13px">名单为空。</span>'; }
+draw();
+o.querySelector('[data-list]').onclick = function (ev) { var v = pick(ev, 'data-rm'); if (v != null) { list.splice(parseInt(v, 10), 1); draw(); } };
+function addOne() { var n = o.querySelector('[name=name]'), name = n.value.trim(); if (!name) return false; if (name === D.meta.brand || list.some(function (c) { return c.name === name; })) { say(o, false, '「' + name + '」已经在名单里。'); return false; }
+list.push({ name: name, category: o.querySelector('[name=cat]').value.trim(), keywords: words(o.querySelector('[name=kw]').value) }); n.value = ''; o.querySelector('[name=kw]').value = ''; say(o, true, ''); draw(); return true; }
+o.querySelector('[data-add]').onclick = addOne;
+o.querySelector('[data-x]').onclick = function () { o.remove(); };
+function send(body, okText, btn) { CODE = o.querySelector('[name=code]').value; if (!CODE) return say(o, false, '请填写管理口令。'); body.code = CODE; body.target = D.meta.brand; btn.disabled = true; say(o, true, '正在保存……');
+api(body, function (r) { btn.disabled = false; say(o, r.ok, r.ok ? okText : (r.message || '保存失败。')); if (r.ok) { var b = o.querySelector('[data-ok]'); b.textContent = '完成'; b.onclick = function () { o.remove(); }; } }); }
+o.querySelector('[data-ok]').onclick = function () { addOne(); send({ action: 'set_comps', comps: list }, '已保存竞品名单。' + WAIT, this); };
+o.querySelector('[data-del]').onclick = function () { if (this.getAttribute('data-sure')) send({ action: 'del_target' }, '已停止监测「' + D.meta.brand + '」。下次更新后它会从切换菜单里消失。', this); else { this.setAttribute('data-sure', '1'); this.textContent = '再点一次确认：停止监测「' + D.meta.brand + '」'; } };
+}
+document.addEventListener('click', function (ev) { if (state.sw && !(ev.target.closest && ev.target.closest('[data-menu]'))) setState({ sw: false }); });
+if (!SETS.order.length) { root.innerHTML = '<div style="padding:60px 0;text-align:center;color:' + SEC + '">还没有生成数据。请等待自动更新完成后刷新页面。</div>'; return; }
+var saved = null; try { saved = localStorage.getItem('monitor'); } catch (e) {}
+use((location.hash && decodeURIComponent(location.hash.slice(1))) || saved || SETS.order[0]);
+render();
+})();
+
+document.addEventListener('keydown', function (e) { var t = e.target; if ((e.key === 'Enter' || e.key === ' ') && t && t.getAttribute && t.getAttribute('role') === 'button' && t.tagName !== 'BUTTON') { e.preventDefault(); t.click(); } });
+
+</script>
+</body>
+</html>

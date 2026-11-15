@@ -1,0 +1,12 @@
+Copyright (c) 2026 Aurora Xu. All rights reserved.
+
+本仓库中的代码、页面设计、分析框架、指标定义、研判提示词与文字说明，均为作者 Aurora Xu 的原创作品，作者保留全部权利。
+
+未经作者书面许可，任何个人或机构不得以任何方式复制、修改、分发、公开展示、改编、出售本仓库的全部或部分内容，也不得将其用于商业用途或据此开发同类产品。仅为评估作者能力而查看本仓库或其页面，不构成任何授权。
+
+以下内容不在本声明范围内，按其各自的许可协议或权利归属处理：
+- MediaCrawler（https://github.com/NanmiCoder/MediaCrawler）：采集脚本调用的第三方开源工具，按其自身许可协议使用，仅限学习与研究，不得商用。
+- 字体 Inter、Noto Sans SC：按 SIL Open Font License 1.1 使用。
+- 页面中展示的新闻、帖子、评论等第三方内容：版权归原作者及平台所有，本项目仅作引用与统计。
+
+The code, page design, analytical framework, metric definitions, prompts and written explanations in this repository are original works of Aurora Xu. No part may be copied, modified, distributed, publicly displayed or used commercially without prior written permission from the author. Viewing for the purpose of evaluating the author does not grant any licence. Third-party components and quoted content remain subject to their own licences and owners.
