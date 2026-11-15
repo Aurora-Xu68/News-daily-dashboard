@@ -67,7 +67,7 @@ a{color:inherit;text-decoration-color:#C7C7CC;text-underline-offset:3px}a:hover{
 .crow [data-l]::before,.wrow [data-l]::before{display:inline;content:attr(data-l);color:#6E6E73;font-size:11px;font-weight:400;margin-right:6px}
 }
 
-.wrow{display:grid;grid-template-columns:minmax(0,1fr) 170px 150px 96px 14px;column-gap:16px;align-items:center}
+.wrow{display:grid;grid-template-columns:minmax(0,1fr) 170px 150px 128px 14px;column-gap:16px;align-items:center}
 .frow{display:grid;grid-template-columns:104px minmax(0,1fr) 78px 60px 84px;column-gap:14px;align-items:center}
 .prow{display:grid;grid-template-columns:minmax(0,1fr) 44px 80px 40px 76px;column-gap:14px;align-items:center}
 .scr{overflow-y:auto;scrollbar-width:auto;scrollbar-color:auto}
@@ -651,7 +651,7 @@ if (!evIn(x, i)) return null;
 var on = w === i;
 var isHot = x.kind === 'hot';
 var ended = x.active === false, isNew = !ended && x.di0 === N - 1;
-return { hot: isHot, ended: ended, i: String(i), level: ended ? '近期无新增' : (x.level === '重点' ? '持续关注' : x.level) + (isNew ? ' · 今日新增' : ''), lvCss: isHot || ended ? 'background: #EDEDF0; color: ' + SEC : lvCss(x.level), title: x.title, first: x.first, trend: isHot ? '互动 ' + fmt(x.eng || 0) : (x.spread || '—'), fcColor: isHot || ended ? SEC : (x.fast || x.trend === 1) ? RED : INK, forecast: isHot ? '' : ended ? '近 7 天无新增' : x.fast ? '↗ 升温快' : x.isnew ? (x.life <= 1 ? '新出现 · 今日首次' : '新出现 · ' + TRW[String(x.trend || 0)]) : TRW[String(x.trend || 0)], saved: (x.saved || 0) > 0, safe: !!x.safe, risk: !isHot, fast: !!x.fast, lv: x.level, open: on, x: on ? 'true' : 'false',
+return { hot: isHot, ended: ended, i: String(i), level: ended ? '近期无新增' : (x.level === '重点' ? '持续关注' : x.level) + (isNew ? ' · 今日新增' : ''), lvCss: isHot || ended ? 'background: #EDEDF0; color: ' + SEC : lvCss(x.level), title: x.title, first: x.first, trend: isHot ? '互动 ' + fmt(x.eng || 0) : (x.spread || '—'), fcColor: isHot || ended ? SEC : (x.fast || x.trend === 1) ? RED : INK, forecast: isHot ? '' : ended ? '近 7 天无新增' : x.fast ? '↗ 升温快' : x.isnew ? (x.life <= 1 ? '新出现 · 今日首次' : x.trend === -3 ? '新出现' : '新出现 · ' + TRW[String(x.trend || 0)]) : TRW[String(x.trend || 0)], saved: (x.saved || 0) > 0, safe: !!x.safe, risk: !isHot, fast: !!x.fast, lv: x.level, open: on, x: on ? 'true' : 'false',
 bg: on ? '#F5F5F7' : 'transparent', bd: on || w === i + 1 || i === D.events.length - 1 ? 'transparent' : '#EDEDF0', rot: on ? 'rotate(180deg)' : 'rotate(0deg)', desc: x.desc || '', action: x.action || '',
 hasCm: (x.cm || []).length > 0, cmHead: '评论区点赞最高的负面评论：', cm: (x.cm || []).map(function (q) { return { x: '“' + q.x + '”', l: q.l > 0 ? '赞 ' + fmt(q.l) : '' }; }),
 hasHts: (x.hts || []).length > 0, hts: (x.hts || []).map(function (h) { return { t: '#' + h.t + '#', m: '共 ' + fmt(h.n) + ' 条内容 · ' + fmt(h.a) + ' 个账号 · ' + h.pl + (h.e > 0 ? ' · 互动 ' + fmt(h.e) : '') }; }),
